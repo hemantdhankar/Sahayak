@@ -24,6 +24,7 @@ import org.w3c.dom.Text;
 public class LoginActivity extends AppCompatActivity implements View.OnClickListener {
     String TAG = "LoginActivity";
     Button loginButton;
+    Button check_button;
     Button loginToSignUpButton;
     TextView loginError;
     String email, password;
@@ -35,6 +36,13 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         mAuth = FirebaseAuth.getInstance();
         loginButton = (Button) findViewById(R.id.loginButton);
         loginToSignUpButton = (Button) findViewById(R.id.loginToSignUpButton);
+        check_button=(Button)findViewById(R.id.check_raise);
+        check_button.setOnClickListener(new View.OnClickListener(){
+            public void onClick(View v){
+                Intent intent = new Intent(getApplicationContext(),RaiseFeature.class);
+                startActivity(intent);
+            }
+        });
         loginButton.setOnClickListener(this);
         loginToSignUpButton.setOnClickListener(this);
         loginError = (TextView) findViewById(R.id.loginError);
