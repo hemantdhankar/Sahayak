@@ -15,6 +15,8 @@ import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.android.material.textfield.TextInputEditText;
+import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -45,8 +47,8 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     public void onClick(View view) {
         int clickedId = view.getId();
         if(clickedId == R.id.loginButton){
-            email = ((EditText) findViewById(R.id.loginEmailAddress)).getText().toString();
-            password = ((EditText) findViewById(R.id.loginPassword)).getText().toString();
+            email = ((TextInputEditText) findViewById(R.id.loginEmailAddress)).getText().toString();
+            password = ((TextInputEditText) findViewById(R.id.loginPassword)).getText().toString();
             mAuth.signInWithEmailAndPassword(email, password)
                     .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
                         @Override
