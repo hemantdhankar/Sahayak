@@ -1,5 +1,6 @@
 package com.example.sahayak;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
@@ -10,26 +11,32 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 
 
 public class AfterLoginActivity extends AppCompatActivity implements BottomNavigationView.OnNavigationItemSelectedListener{
     BottomNavigationView bottomNavigationView;
+    private FirebaseAuth mAuth;
+    DashboardFragment dashboardFragment=new DashboardFragment();
+    AddIssueFragment addIssueFragment=new AddIssueFragment();
+    LeaderBoardFragment leaderBoardFragment = new LeaderBoardFragment();
+    ProfileFragment profileFragment = new ProfileFragment();
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.afterloginlayout);
-        bottomNavigationView = findViewById(R.id.bottom_navigation);
-        bottomNavigationView.setOnNavigationItemSelectedListener(this);
-        bottomNavigationView.setSelectedItemId(R.id.dashboard_bi);
-
-
-
+        mAuth = FirebaseAuth.getInstance();
+        FirebaseUser currentUser = mAuth.getCurrentUser();
+        if(currentUser==null){
+            startActivity(new Intent(AfterLoginActivity.this, LoginActivity.class));
+        }else{
+            bottomNavigationView = findViewById(R.id.bottom_navigation);
+            bottomNavigationView.setOnNavigationItemSelectedListener(this);
+            bottomNavigationView.setSelectedItemId(R.id.dashboard_bi);
+        }
     }
-    DashboardFragment dashboardFragment=new DashboardFragment();
-    AddIssueFragment addIssueFragment=new AddIssueFragment();
-    LeaderBoardFragment leaderBoardFragment = new LeaderBoardFragment();
-    ProfileFragment profileFragment = new ProfileFragment();
 
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
@@ -56,5 +63,11 @@ public class AfterLoginActivity extends AppCompatActivity implements BottomNavig
                 return true;
         }
         return false;
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+
     }
 }
