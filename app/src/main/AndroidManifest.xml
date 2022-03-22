@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.sahayak">
-    <uses-permission android:name="android.permission.CAMERA"> </uses-permission>
+
+    <uses-permission android:name="android.permission.CAMERA" />
+
     <application
         android:allowBackup="true"
         android:icon="@drawable/sahayak_logo"
@@ -9,13 +11,16 @@
         android:roundIcon="@drawable/sahayak_logo"
         android:supportsRtl="true"
         android:theme="@style/Theme.Sahayak">
+
+        <activity
+            android:name=".Feed"
+            android:exported="false" />
         <activity
             android:name=".RaiseFeature"
             android:exported="false" />
         <activity
             android:name=".LeaderBoard"
-            android:exported="false"
-            />
+            android:exported="false" />
         <activity
             android:name=".RegisterActivity"
             android:exported="false"

@@ -29,7 +29,9 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     Button check_button;
     Button check_leaderboard_button;
     Button loginToSignUpButton;
+    Button checkfeedbutton;
     TextView loginError;
+
     String email, password;
     private FirebaseAuth mAuth;
     @Override
@@ -39,6 +41,17 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         mAuth = FirebaseAuth.getInstance();
         loginButton = (Button) findViewById(R.id.loginButton);
         loginToSignUpButton = (Button) findViewById(R.id.loginToSignUpButton);
+
+        loginError = (TextView) findViewById(R.id.loginError);
+        loginError.setVisibility(View.GONE);
+        checkfeedbutton = findViewById(R.id.check_feed);
+        checkfeedbutton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent= new Intent(getApplicationContext(), Feed.class);
+                startActivity(intent);
+            }
+        });
         check_button=(Button)findViewById(R.id.check_raise);
         check_button.setOnClickListener(new View.OnClickListener(){
             public void onClick(View v){
@@ -70,24 +83,32 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         if(clickedId == R.id.loginButton){
             email = ((TextInputEditText) findViewById(R.id.loginEmailAddress)).getText().toString();
             password = ((TextInputEditText) findViewById(R.id.loginPassword)).getText().toString();
-            mAuth.signInWithEmailAndPassword(email, password)
-                    .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
-                        @Override
-                        public void onComplete(@NonNull Task<AuthResult> task) {
-                            if (task.isSuccessful()) {
-                                // Sign in success, update UI with the signed-in user's information
-                                Log.d(TAG, "signInWithEmail:success");
-                                FirebaseUser user = mAuth.getCurrentUser();
-                                startActivity(new Intent(LoginActivity.this, MainActivity.class));
-                            } else {
-                                // If sign in fails, display a message to the user.
-                                Log.w(TAG, "signInWithEmail:failure", task.getException());
-                                String errorMsg = "Incorrect Email or Password!";
-                                loginError.setText(errorMsg);
-                                loginError.setVisibility(View.VISIBLE);
+            String errorMsg = Validator.validate_registration_data(email, password);
+            if(errorMsg!=null){
+                loginError.setText(errorMsg);
+                loginError.setVisibility(View.VISIBLE);
+            }
+            else{
+                mAuth.signInWithEmailAndPassword(email, password)
+                        .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
+                            @Override
+                            public void onComplete(@NonNull Task<AuthResult> task) {
+                                if (task.isSuccessful()) {
+                                    // Sign in success, update UI with the signed-in user's information
+                                    Log.d(TAG, "signInWithEmail:success");
+                                    FirebaseUser user = mAuth.getCurrentUser();
+                                    startActivity(new Intent(LoginActivity.this, MainActivity.class));
+                                } else {
+                                    // If sign in fails, display a message to the user.
+                                    Log.w(TAG, "signInWithEmail:failure", task.getException());
+                                    String errorMsg = "Incorrect Email or Password!";
+                                    loginError.setText(errorMsg);
+                                    loginError.setVisibility(View.VISIBLE);
+                                }
                             }
-                        }
-                    });
+                        });
+            }
+
 
         }else if(clickedId == R.id.loginToSignUpButton){
             startActivity(new Intent(LoginActivity.this, RegisterActivity.class));
