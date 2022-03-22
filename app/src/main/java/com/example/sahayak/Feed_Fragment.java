@@ -6,16 +6,25 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
+
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -25,6 +34,7 @@ import java.util.ArrayList;
 class feedItem implements Serializable {
     String title;
     String description;
+    String img_path="";
     int pincode;
 
     public feedItem(String title, String description, int pincode) {
@@ -32,19 +42,20 @@ class feedItem implements Serializable {
         this.description = description;
         this.pincode = pincode;
     }
-
     @Override
     public String toString() {
         return "feedItem{" +
                 "title='" + title + '\'' +
                 ", description='" + description + '\'' +
-                ", pincode=" + pincode +
+                ", pincode=" + pincode +'\''+
+                ", img_path=" + img_path +
                 '}';
     }
 }
 public class Feed_Fragment extends Fragment {
 
-    ArrayList<feedItem> feed_arr=new ArrayList<>();
+    HashMap<String,feedItem> map = new HashMap<>();
+//    ArrayList<feedItem> feed_arr=new ArrayList<>();
     View view;
     RecyclerView.Adapter adapter;
 
@@ -94,18 +105,38 @@ public class Feed_Fragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         view=inflater.inflate(R.layout.fragment_feed, container, false);
-        feed_arr.add(new feedItem("dog is missing","Description-1",112233));
-        feed_arr.add(new feedItem("cow is missing","Description-2",112442));
-        feed_arr.add(new feedItem("monkey is missing","Description-3",152431));
-        feed_arr.add(new feedItem("cat is missing","Description-4",323232));
-        feed_arr.add(new feedItem("Yash is missing","Description-5",110011));
+        ArrayList<feedItem> feed_arr=new ArrayList<>();
+        feed_arr.add(new feedItem("bhaskar","bhaskar is missing",110020));
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        db.collection("Issue_detail")
+                .get()
+                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        if (task.isSuccessful()) {
+                            for (QueryDocumentSnapshot document : task.getResult()) {
+                                String issue_id = document.getId();
+                                HashMap<String,Object> temp = (HashMap<String, Object>) document.getData();
+                                String c = temp.get("image_path")==null?"": (String) temp.get("image_path");
+                                feedItem ff = new feedItem((String)temp.get("category"),(String)temp.get("description"),Integer.parseInt((String) temp.get("pin_code")));
+                                map.put(issue_id,ff);
+                                feed_arr.add(ff);
+                                Log.i("Feed_fragment",""+temp.keySet());
+                            }
+                        } else {
+                            Log.w("Feed_Fragment", "Error getting documents.", task.getException());
+                        }
+                    }
+                });
 
+        Log.i("Feed_fragment",""+feed_arr.size());
         RecyclerView rec_view=view.findViewById(R.id.recycler_view_feed);
         if(adapter != null){
             adapter.notifyDataSetChanged();
         }
         else{
             adapter=new FeedAdapter(feed_arr);
+            adapter.notifyDataSetChanged();
         }
         rec_view.setAdapter(adapter);
         rec_view.setLayoutManager(new LinearLayoutManager(getActivity()));
