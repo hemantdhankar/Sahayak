@@ -3,12 +3,151 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".ProfileFragment">
 
-    <!-- TODO: Update blank fragment layout -->
-    <TextView
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:text="@string/hello_blank_fragment" />
+        android:orientation="vertical">
 
+        <TextView
+            android:id="@+id/textView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Your Profile"
+            android:textSize="30dp"
+            android:layout_gravity="center_horizontal"
+            android:gravity="center_horizontal"
+            android:padding="40dp"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:layout_gravity="center"
+            android:padding="20dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:layout_height="wrap_content"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:hint="First Name"
+                    app:boxStrokeColor="@color/teal_700"
+                    app:boxStrokeWidth="2dp"
+                    app:startIconDrawable="@drawable/ic_outline_person_24"
+                    app:endIconMode="clear_text"
+                    android:paddingRight="5dp"
+                    app:boxBackgroundMode="outline"
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                    tools:ignore="HardcodedText">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/profileFirstName"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="textPersonName"
+                        android:enabled="false"
+                        />
+
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:layout_height="wrap_content"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:hint="Last Name"
+                    app:boxStrokeColor="@color/teal_700"
+                    app:boxStrokeWidth="2dp"
+                    android:paddingLeft="5dp"
+                    app:endIconMode="clear_text"
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/profileLastName"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="textPersonName"
+                        android:enabled="false"
+                        />
+
+                </com.google.android.material.textfield.TextInputLayout>
+            </LinearLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Email"
+                app:boxStrokeColor="@color/teal_700"
+                app:boxStrokeWidth="2dp"
+                app:startIconDrawable="@drawable/ic_round_email_24"
+                app:endIconMode="clear_text"
+                android:layout_marginTop="30dp"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/profileEmailAddress"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="textEmailAddress"
+                    android:enabled="false"
+                    />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:text=" I am a"
+                android:textSize="20dp"
+                android:textStyle="bold" />
+            <RadioGroup
+                android:id="@+id/profileUserType"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="horizontal"
+                android:layout_gravity="center_horizontal">
+                <RadioButton
+                    android:id="@+id/profileRegularUser"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Regular User"
+                    android:layout_marginRight="10dp"
+                    android:enabled="false" />
+
+                <RadioButton
+                    android:id="@+id/profileSocialWorker"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Social Worker"
+                    android:enabled="false"
+                    android:layout_marginRight="10dp"/>
+
+                <RadioButton
+                    android:id="@+id/profileNgo"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="NGO"
+                    android:enabled="false"
+                    android:layout_marginRight="10dp"/>
+            </RadioGroup>
+            <Button
+                android:id="@+id/profileLogoutButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Logout"
+                android:layout_gravity="center|bottom"
+                android:layout_marginTop="-200dp"
+                tools:ignore="MissingConstraints" />
+
+        </LinearLayout>
+    </LinearLayout>
 </FrameLayout>

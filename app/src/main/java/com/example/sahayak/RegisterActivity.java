@@ -52,7 +52,7 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
         super.onStart();
         FirebaseUser currentUser = mAuth.getCurrentUser();
         if(currentUser != null){
-            startActivity(new Intent(RegisterActivity.this, MainActivity.class));
+            startActivity(new Intent(RegisterActivity.this, AfterLoginActivity.class));
         }
     }
 
@@ -102,7 +102,7 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
                                             });
 
 
-                                    startActivity(new Intent(RegisterActivity.this, MainActivity.class));
+                                    startActivity(new Intent(RegisterActivity.this, AfterLoginActivity.class));
                                 } else {
                                     // If sign in fails, display a message to the user.
                                     Log.w(TAG, "createUserWithEmail:failure", task.getException());
