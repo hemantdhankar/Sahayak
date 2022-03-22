@@ -50,7 +50,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         check_leaderboard_button.setOnClickListener((new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent leader_intent=new Intent(getApplicationContext(),LeaderBoard.class);
+                Intent leader_intent=new Intent(getApplicationContext(),AfterLoginActivity.class);
                 startActivity(leader_intent);
 
 
