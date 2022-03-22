@@ -11,4 +11,5 @@
     <string name="login_failed">"Login failed"</string>
     <string name="select">"Category"</string>
     <string name="describe_issue">"Describe Your Issue"</string>
+    <string name="pincode">Enter area pincode</string>
 </resources>
