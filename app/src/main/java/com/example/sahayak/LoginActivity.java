@@ -8,20 +8,10 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
-import java.util.Locale;
-import android.os.Bundle;
-import android.app.Activity;
-import android.content.Intent;
-import android.content.res.Configuration;
-import android.content.res.Resources;
-import android.util.DisplayMetrics;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -37,7 +27,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     String TAG = "LoginActivity";
     Button loginButton;
     Button check_button;
-
+    Button check_leaderboard_button;
     Button loginToSignUpButton;
     TextView loginError;
     String email, password;
@@ -50,19 +40,28 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         loginButton = (Button) findViewById(R.id.loginButton);
         loginToSignUpButton = (Button) findViewById(R.id.loginToSignUpButton);
         check_button=(Button)findViewById(R.id.check_raise);
-
         check_button.setOnClickListener(new View.OnClickListener(){
             public void onClick(View v){
                 Intent intent = new Intent(getApplicationContext(),RaiseFeature.class);
                 startActivity(intent);
             }
         });
+        check_leaderboard_button=(Button) findViewById(R.id.check_leader);
+        check_leaderboard_button.setOnClickListener((new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent leader_intent=new Intent(getApplicationContext(),LeaderBoard.class);
+                startActivity(leader_intent);
+
+
+
+            }
+        }));
 
         loginButton.setOnClickListener(this);
         loginToSignUpButton.setOnClickListener(this);
         loginError = (TextView) findViewById(R.id.loginError);
         loginError.setVisibility(View.GONE);
-
     }
 
     @Override
@@ -104,5 +103,4 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         }
 
     }
-
 }

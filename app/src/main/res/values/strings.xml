@@ -11,5 +11,9 @@
     <string name="login_failed">"Login failed"</string>
     <string name="select">"Category"</string>
     <string name="describe_issue">"Describe Your Issue"</string>
+    <string name="leaderboard">Leaderboard</string>
+    <string name="issue_raiser_individual">Issue Raiser (Individual)</string>
+    <string name="ngos">NGOs</string>
     <string name="pincode">Enter area pincode</string>
+
 </resources>
