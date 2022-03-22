@@ -88,9 +88,17 @@
         <Button
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="check"
+            android:text="Check raise"
             android:id="@+id/check_raise"
             >
         </Button>
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Check LeaderBoard"
+            android:id="@+id/check_leader"
+            >
+        </Button>
+
     </LinearLayout>
 </LinearLayout>
