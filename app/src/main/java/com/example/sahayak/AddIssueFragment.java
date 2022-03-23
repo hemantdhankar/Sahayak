@@ -6,6 +6,7 @@ import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
+import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -17,6 +18,7 @@ import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
 
+import android.os.Looper;
 import android.provider.MediaStore;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -201,12 +203,6 @@ public class AddIssueFragment extends Fragment {
 
     int LOCATION_REFRESH_TIME = 15000; // 15 seconds to update
     int LOCATION_REFRESH_DISTANCE = 500; // 500 meters to update
-    private final LocationListener mLocationListener = new LocationListener() {
-        @Override
-        public void onLocationChanged(final Location location) {
-            //your code here
-        }
-    };
 
     //to save issue to database
     public void raise_issue(View v) {
@@ -267,22 +263,70 @@ public class AddIssueFragment extends Fragment {
         }
     }
 
-    LocationManager mLocationManager;
+    Location mlocation;
+    String latitude, longitude;
+    final LocationListener locationListener = new LocationListener() {
+        @Override
+        public void onLocationChanged(Location location) {
+            mlocation = location;
+            Log.d("Location Changes", location.toString());
+            latitude = (String.valueOf(location.getLatitude()));
+            longitude = (String.valueOf(location.getLongitude()));
+        }
+
+        @Override
+        public void onStatusChanged(String provider, int status, Bundle extras) {
+            Log.d("Status Changed", String.valueOf(status));
+        }
+
+        @Override
+        public void onProviderEnabled(String provider) {
+            Log.d("Provider Enabled", provider);
+        }
+
+        @Override
+        public void onProviderDisabled(String provider) {
+            Log.d("Provider Disabled", provider);
+        }
+    };
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         root_view = inflater.inflate(R.layout.fragment_add_issue, container, false);
-        mLocationManager = (LocationManager) getActivity().getSystemService(getContext().LOCATION_SERVICE);
-        if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+        Criteria criteria = new Criteria();
+        criteria.setAccuracy(Criteria.ACCURACY_COARSE);
+        criteria.setPowerRequirement(Criteria.POWER_LOW);
+        criteria.setAltitudeRequired(false);
+        criteria.setBearingRequired(false);
+        criteria.setSpeedRequired(false);
+        criteria.setCostAllowed(true);
+        criteria.setHorizontalAccuracy(Criteria.ACCURACY_HIGH);
+        criteria.setVerticalAccuracy(Criteria.ACCURACY_HIGH);
 
-            Toast.makeText(getContext(), "GPS Permission not provided", Toast.LENGTH_SHORT).show();
-        }
-        else
-        {
-            mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, LOCATION_REFRESH_TIME, LOCATION_REFRESH_DISTANCE, mLocationListener);
+        // Now create a location manager
+        final LocationManager locationManager = (LocationManager) getActivity().getSystemService(getContext().LOCATION_SERVICE);
 
-        }
+        // This is the Best And IMPORTANT part
+        final Looper looper = null;
+        Button getlocaton=(Button)root_view.findViewById(R.id.GetLocation);
+        getlocaton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+
+                    Toast.makeText(getContext(), "No permission of gps", Toast.LENGTH_SHORT).show();
+                }
+                else
+                {
+                    locationManager.requestSingleUpdate(criteria, locationListener, looper);
+                    Toast.makeText(getContext(), longitude+latitude, Toast.LENGTH_SHORT).show();
+
+
+                }
+
+            }
+        });
 
         Camera_Button=(Button) root_view.findViewById(R.id.camera_button_id);
         Upload_Button=(Button)root_view.findViewById(R.id.upload_button_id);
@@ -309,7 +353,8 @@ public class AddIssueFragment extends Fragment {
         Camera_Button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                camera_click(root_view);
+                Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                startActivityForResult(intent,101);
 
 
 

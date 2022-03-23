@@ -125,6 +125,13 @@
         <Button
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:text="Get Location"
+            android:layout_gravity="center"
+            android:id="@+id/GetLocation"
+            ></Button>
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:text="Raise Issue"
             android:id="@+id/raise_issue_button"
