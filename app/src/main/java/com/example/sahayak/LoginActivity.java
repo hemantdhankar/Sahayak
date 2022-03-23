@@ -40,35 +40,13 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         mAuth = FirebaseAuth.getInstance();
         loginButton = (Button) findViewById(R.id.loginButton);
         loginToSignUpButton = (Button) findViewById(R.id.loginToSignUpButton);
-        check_button=(Button)findViewById(R.id.check_raise);
-        check_button.setOnClickListener(new View.OnClickListener(){
-            public void onClick(View v){
-                Intent intent = new Intent(getApplicationContext(),RaiseFeature.class);
-                startActivity(intent);
-            }
-        });
-        check_leaderboard_button=(Button) findViewById(R.id.check_leader);
-        check_leaderboard_button.setOnClickListener((new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent leader_intent=new Intent(getApplicationContext(),AfterLoginActivity.class);
-                startActivity(leader_intent);
-            }
-        }));
+
 
         loginButton.setOnClickListener(this);
         loginToSignUpButton.setOnClickListener(this);
 
         loginError = (TextView) findViewById(R.id.loginError);
         loginError.setVisibility(View.GONE);
-        checkfeedbutton = findViewById(R.id.check_feed);
-        checkfeedbutton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent= new Intent(getApplicationContext(), Feed.class);
-                startActivity(intent);
-            }
-        });
     }
 
     @Override

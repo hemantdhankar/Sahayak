@@ -50,7 +50,7 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.FeedViewHolder
                 AppCompatActivity ac= (AppCompatActivity) v.getContext();
                 Main_Post ff= new Main_Post();
                 ff.setArguments(bundle);
-                ac.getSupportFragmentManager().beginTransaction().replace(R.id.feed_layout,ff)
+                ac.getSupportFragmentManager().beginTransaction().replace(R.id.MainContentFragment,ff)
                         .addToBackStack(null)
                         .commit();
             }
