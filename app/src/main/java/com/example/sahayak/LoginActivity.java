@@ -29,6 +29,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     Button check_button;
     Button check_leaderboard_button;
     Button loginToSignUpButton;
+    Button checkfeedbutton;
     TextView loginError;
     String email, password;
     private FirebaseAuth mAuth;
@@ -52,16 +53,22 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
             public void onClick(View view) {
                 Intent leader_intent=new Intent(getApplicationContext(),AfterLoginActivity.class);
                 startActivity(leader_intent);
-
-
-
             }
         }));
 
         loginButton.setOnClickListener(this);
         loginToSignUpButton.setOnClickListener(this);
+
         loginError = (TextView) findViewById(R.id.loginError);
         loginError.setVisibility(View.GONE);
+        checkfeedbutton = findViewById(R.id.check_feed);
+        checkfeedbutton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent= new Intent(getApplicationContext(), Feed.class);
+                startActivity(intent);
+            }
+        });
     }
 
     @Override
@@ -70,6 +77,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         if(clickedId == R.id.loginButton){
             email = ((TextInputEditText) findViewById(R.id.loginEmailAddress)).getText().toString();
             password = ((TextInputEditText) findViewById(R.id.loginPassword)).getText().toString();
+
             mAuth.signInWithEmailAndPassword(email, password)
                     .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
                         @Override
