@@ -22,6 +22,7 @@ public class AfterLoginActivity extends AppCompatActivity implements BottomNavig
     AddIssueFragment addIssueFragment=new AddIssueFragment();
     LeaderBoardFragment leaderBoardFragment = new LeaderBoardFragment();
     ProfileFragment profileFragment = new ProfileFragment();
+    Feed_Fragment feed_fragment = new Feed_Fragment();
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -43,7 +44,7 @@ public class AfterLoginActivity extends AppCompatActivity implements BottomNavig
         switch (item.getItemId()) {
             case R.id.dashboard_bi:
                 Log.d("check", "onNavigationItemSelected: dashboard");
-                getSupportFragmentManager().beginTransaction().replace(R.id.MainContentFragment, dashboardFragment).commit();
+                getSupportFragmentManager().beginTransaction().replace(R.id.MainContentFragment, feed_fragment).commit();
                 return true;
             case R.id.search_bi:
                 Log.d("check", "onNavigationItemSelected: search");

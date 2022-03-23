@@ -55,7 +55,7 @@ class feedItem implements Serializable {
 public class Feed_Fragment extends Fragment {
 
     HashMap<String,feedItem> map = new HashMap<>();
-    ArrayList<feedItem> feed_arr=new ArrayList<>();
+//    ArrayList<feedItem> feed_arr=new ArrayList<>();
     View view;
     RecyclerView.Adapter adapter;
 
@@ -105,8 +105,8 @@ public class Feed_Fragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         view=inflater.inflate(R.layout.fragment_feed, container, false);
-        ArrayList<feedItem> temp_arr=new ArrayList<>();
-        temp_arr.add(new feedItem("bhaskar","bhaskar is missing",110020));
+        ArrayList<feedItem> feed_arr=new ArrayList<>();
+        feed_arr.add(new feedItem("bhaskar","bhaskar is missing",110020));
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         db.collection("Issue_detail")
                 .get()
@@ -139,17 +139,11 @@ public class Feed_Fragment extends Fragment {
 
         RecyclerView rec_view=view.findViewById(R.id.recycler_view_feed);
         if(adapter != null){
-            for(feedItem ff: temp_arr)
-            {
-                feed_arr.add(ff);
-            }
+
             adapter.notifyDataSetChanged();
         }
         else{
-            for(feedItem ff: temp_arr)
-            {
-                feed_arr.add(ff);
-            }
+
             Log.i("Feed_fragment",""+feed_arr.size());
             adapter=new FeedAdapter(feed_arr);
             adapter.notifyDataSetChanged();
