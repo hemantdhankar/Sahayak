@@ -1,14 +1,20 @@
 package com.example.sahayak;
 
+import android.Manifest;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
 
 import android.provider.MediaStore;
@@ -44,20 +50,20 @@ import java.util.UUID;
  * create an instance of this fragment.
  */
 public class AddIssueFragment extends Fragment {
-    String[] items =  {"Transport","Electricity","Food","Water","Sewage","Roads","Animals","Old Citizens","Garbage","Donations"};
+    String[] items = {"Transport", "Electricity", "Food", "Water", "Sewage", "Roads", "Animals", "Old Citizens", "Garbage", "Donations"};
     protected AutoCompleteTextView autoCompleteTxt;
     protected ArrayAdapter<String> adapterItems;
-    protected EditText desc_view,pincode_view;
+    protected EditText desc_view, pincode_view;
     protected FirebaseFirestore database;
     protected ImageView image_view;
     protected StorageReference storage_ref;
     protected byte[] bb;
     protected String path;
     protected Uri filePath;
-    public static int no_of_post=0;
+    public static int no_of_post = 0;
     private final int PICK_IMAGE_REQUEST = 22;
     View root_view;
-    Button Camera_Button,Upload_Button,Raise_Button;
+    Button Camera_Button, Upload_Button, Raise_Button;
 
 
     // TODO: Rename parameter arguments, choose names that match
@@ -72,27 +78,28 @@ public class AddIssueFragment extends Fragment {
     public AddIssueFragment() {
         // Required empty public constructor
     }
-    public void select_image(View v){
+
+    public void select_image(View v) {
         Intent intent = new Intent();
         intent.setType("image/*");
         intent.setAction(Intent.ACTION_GET_CONTENT);
-        startActivityForResult(Intent.createChooser(intent, "Select Image from here..."),PICK_IMAGE_REQUEST);
+        startActivityForResult(Intent.createChooser(intent, "Select Image from here..."), PICK_IMAGE_REQUEST);
     }
-    public void camera_click(View v){
+
+    public void camera_click(View v) {
         Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-        startActivityForResult(intent,101);
+        startActivityForResult(intent, 101);
 
     }
+
     @Override
-    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data)
-    {
+    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if(resultCode == Activity.RESULT_OK){
-            if(requestCode==101){
+        if (resultCode == Activity.RESULT_OK) {
+            if (requestCode == 101) {
                 onCaptureimage(data);
                 uploadtobase();
-            }
-            else if(requestCode==PICK_IMAGE_REQUEST){
+            } else if (requestCode == PICK_IMAGE_REQUEST) {
                 filePath = data.getData();
                 try {
                     // Setting image on image view using Bitmap
@@ -104,9 +111,7 @@ public class AddIssueFragment extends Fragment {
                                     filePath);
                     image_view.setImageBitmap(bitmap);
                     upload_from_gallery();
-                }
-
-                catch (IOException e) {
+                } catch (IOException e) {
                     // Log the exception
                     e.printStackTrace();
                 }
@@ -114,11 +119,12 @@ public class AddIssueFragment extends Fragment {
         }
 
     }
-    public void upload_from_gallery(){
+
+    public void upload_from_gallery() {
         if (filePath != null) {
             String pincode = pincode_view.getText().toString();
             // Code for showing progressDialog while uploading
-            path=pincode+"/"+ UUID.randomUUID().toString();
+            path = pincode + "/" + UUID.randomUUID().toString();
             ProgressDialog progressDialog = new ProgressDialog(getContext());
             progressDialog.setTitle("Uploading...");
             progressDialog.show();
@@ -132,22 +138,20 @@ public class AddIssueFragment extends Fragment {
 
                         @Override
                         public void onSuccess(
-                                UploadTask.TaskSnapshot taskSnapshot)
-                        {
+                                UploadTask.TaskSnapshot taskSnapshot) {
                             // Image uploaded successfully
                             // Dismiss dialog
                             progressDialog.dismiss();
-                            Toast.makeText(getContext(),"Image Uploaded!!",Toast.LENGTH_SHORT).show();
+                            Toast.makeText(getContext(), "Image Uploaded!!", Toast.LENGTH_SHORT).show();
                         }
                     })
 
                     .addOnFailureListener(new OnFailureListener() {
                         @Override
-                        public void onFailure(@NonNull Exception e)
-                        {
+                        public void onFailure(@NonNull Exception e) {
 
                             progressDialog.dismiss();
-                            Toast.makeText(getContext(), "Failed " + e.getMessage(),Toast.LENGTH_SHORT).show();
+                            Toast.makeText(getContext(), "Failed " + e.getMessage(), Toast.LENGTH_SHORT).show();
                         }
                     })
                     .addOnProgressListener(
@@ -155,29 +159,30 @@ public class AddIssueFragment extends Fragment {
 
                                 @Override
                                 public void onProgress(
-                                        UploadTask.TaskSnapshot taskSnapshot)
-                                {
+                                        UploadTask.TaskSnapshot taskSnapshot) {
                                     double progress
                                             = (100.0
                                             * taskSnapshot.getBytesTransferred()
                                             / taskSnapshot.getTotalByteCount());
                                     progressDialog.setMessage(
                                             "Uploaded "
-                                                    + (int)progress + "%");
+                                                    + (int) progress + "%");
                                 }
                             });
         }
     }
-    public void onCaptureimage(Intent data){
-        Bitmap thumbnail=(Bitmap)data.getExtras().get("data");
-        ByteArrayOutputStream bytes=new ByteArrayOutputStream();
-        thumbnail.compress(Bitmap.CompressFormat.JPEG,90,bytes);
-        bb=bytes.toByteArray();
+
+    public void onCaptureimage(Intent data) {
+        Bitmap thumbnail = (Bitmap) data.getExtras().get("data");
+        ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+        thumbnail.compress(Bitmap.CompressFormat.JPEG, 90, bytes);
+        bb = bytes.toByteArray();
         image_view.setImageBitmap(thumbnail);
     }
-    public void uploadtobase(){
+
+    public void uploadtobase() {
         String pincode = pincode_view.getText().toString();
-        path=pincode+"/"+UUID.randomUUID().toString();
+        path = pincode + "/" + UUID.randomUUID().toString();
         StorageReference mountainImagesRef = storage_ref.child(path);
         UploadTask uploadTask = mountainImagesRef.putBytes(bb);
         uploadTask.addOnFailureListener(new OnFailureListener() {
@@ -194,8 +199,19 @@ public class AddIssueFragment extends Fragment {
         });
     }
 
+    int LOCATION_REFRESH_TIME = 15000; // 15 seconds to update
+    int LOCATION_REFRESH_DISTANCE = 500; // 500 meters to update
+    private final LocationListener mLocationListener = new LocationListener() {
+        @Override
+        public void onLocationChanged(final Location location) {
+            //your code here
+        }
+    };
+
     //to save issue to database
-    public void raise_issue(View v){
+    public void raise_issue(View v) {
+
+
         //FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         String description = desc_view.getText().toString();
         String pincode = pincode_view.getText().toString();
@@ -204,7 +220,7 @@ public class AddIssueFragment extends Fragment {
         map.put("description", description);
         map.put("pin_code", pincode);
         map.put("category", category);
-        map.put("image_path",path+".JPEG");
+        map.put("image_path", path + ".JPEG");
         //map.put("id",user.getEmail());
         database.collection("Issue_detail").add(map).addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
             @Override
@@ -220,7 +236,7 @@ public class AddIssueFragment extends Fragment {
                 });
         desc_view.setText("");
         pincode_view.setText("");
-        path="";
+        path = "";
         no_of_post++;
     }
 
@@ -251,10 +267,23 @@ public class AddIssueFragment extends Fragment {
         }
     }
 
+    LocationManager mLocationManager;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        root_view=inflater.inflate(R.layout.fragment_add_issue, container, false);
+        root_view = inflater.inflate(R.layout.fragment_add_issue, container, false);
+        mLocationManager = (LocationManager) getActivity().getSystemService(getContext().LOCATION_SERVICE);
+        if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+
+            Toast.makeText(getContext(), "GPS Permission not provided", Toast.LENGTH_SHORT).show();
+        }
+        else
+        {
+            mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, LOCATION_REFRESH_TIME, LOCATION_REFRESH_DISTANCE, mLocationListener);
+
+        }
+
         Camera_Button=(Button) root_view.findViewById(R.id.camera_button_id);
         Upload_Button=(Button)root_view.findViewById(R.id.upload_button_id);
         Raise_Button=(Button)root_view.findViewById(R.id.raise_issue_button) ;
