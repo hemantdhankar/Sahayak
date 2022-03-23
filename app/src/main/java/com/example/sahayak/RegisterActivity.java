@@ -65,7 +65,7 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
         String last_name = String.valueOf(((EditText) findViewById(R.id.registerLastName)).getText());
         RadioGroup userType = (RadioGroup) findViewById(R.id.userType);
         if(clickedId == R.id.registerButton){
-            String errorMsg = Validator.validate_registration_data(email, password);
+            String errorMsg = Validator.validate_registration_data(first_name, last_name,email, password);
             if(errorMsg!=null){
                 error.setText(errorMsg);
                 error.setVisibility(View.VISIBLE);
