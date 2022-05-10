@@ -26,6 +26,8 @@ import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
@@ -35,6 +37,7 @@ import com.google.firebase.storage.UploadTask;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.UUID;
 
@@ -196,28 +199,41 @@ public class AddIssueFragment extends Fragment {
 
     //to save issue to database
     public void raise_issue(View v){
-        //FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         String description = desc_view.getText().toString();
         String pincode = pincode_view.getText().toString();
         String category = autoCompleteTxt.getText().toString();
-        HashMap<String, String> map = new HashMap<>();
+        HashMap<String, Object> map = new HashMap<>();
         map.put("description", description);
         map.put("pin_code", pincode);
         map.put("category", category);
         map.put("image_path",path+".JPEG");
-        //map.put("id",user.getEmail());
+        map.put("email",user.getEmail());
+        map.put("number_of_likes",String.valueOf(0));
+
+        ArrayList<String> likers_initial= new ArrayList<>();
+        likers_initial.add("initial");
+        map.put("likers",likers_initial);
+
+
         database.collection("Issue_detail").add(map).addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
+
             @Override
             public void onSuccess(DocumentReference documentReference) {
-                Log.d("donee", "DocumentSnapshot added with ID: " + documentReference.getId());
+                Log.i("donee", "DocumentSnapshot added with ID: " + documentReference.getId());
             }
         })
                 .addOnFailureListener(new OnFailureListener() {
                     @Override
                     public void onFailure(@NonNull Exception e) {
-                        Log.w("fialedd", "Error adding document", e);
+                        Log.i("fialedd", "Error adding document", e);
                     }
                 });
+
+        //llikers collection , add issue id for likers list
+
+
+
         desc_view.setText("");
         pincode_view.setText("");
         path="";
