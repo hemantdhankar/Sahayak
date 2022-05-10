@@ -17,7 +17,7 @@ public class Feed extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_feed);
         f_manager=getSupportFragmentManager();
-        home_feed();
+        home_feed();        
     }
     private void home_feed(){
         f_transaction=f_manager.beginTransaction();

@@ -3,18 +3,34 @@ package com.example.sahayak;
 
 import android.annotation.SuppressLint;
 import android.os.Bundle;
+import android.os.Message;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Adapter;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.annotations.Nullable;
+import com.google.firebase.firestore.DocumentChange;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.EventListener;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.QuerySnapshot;
+
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.FeedViewHolder>{
 
@@ -38,7 +54,54 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.FeedViewHolder
         Log.i("in adapter","-------checkcheck-----");
 
         feedItem item=anotherList.get(position);
-        holder.titleFeed.setText(""+item.title);
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        FirebaseAuth mAuth=FirebaseAuth.getInstance();
+        DocumentReference docRef = db.collection("users").document(""+item.email);
+        docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                if (task.isSuccessful()) {
+                    DocumentSnapshot document = task.getResult();
+                    if (document.exists()) {
+                        String name=document.getString("first_name");
+                        holder.postwriter.setText(""+name);
+                        Log.d("tag", "DocumentSnapshot data: " + document.getData());
+                    } else {
+                        Log.d("tag", "No such document");
+                    }
+                } else {
+                    Log.d("tag", "get failed with ", task.getException());
+                }
+            }
+        });
+
+        DocumentReference docRefissue = db.collection("Issue_detail").document(""+item.id);
+        docRefissue.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                Log.i("innoc","we are here");
+                if (task.isSuccessful()) {
+                    DocumentSnapshot document = task.getResult();
+                    if (document.exists()) {
+                        HashMap<String, Object> current_issue = (HashMap<String, Object>) document.getData();
+                        holder.titleFeed.setText(""+current_issue.get("category"));
+                        holder.titlepin.setText(""+current_issue.get("pin_code"));
+                        holder.numberoflikes.setText(""+current_issue.get("number_of_likes"));
+
+                        Log.d("tag", "DocumentSnapshot data: " + document.getData());
+                    } else {
+                        Log.d("tag", "No such document");
+                    }
+                } else {
+                    Log.d("tag", "get failed with ", task.getException());
+                }
+            }
+        });
+
+
+
+
+
 
 
         holder.itemView.setOnClickListener(new View.OnClickListener() {
@@ -67,11 +130,16 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.FeedViewHolder
 
         //public TextView numberNews;
         public TextView titleFeed;
-
+        public TextView titlepin;
+        public TextView postwriter;
+        public TextView numberoflikes;
         public FeedViewHolder(@NonNull View itemView) {
             super(itemView);
             //numberNews=itemView.findViewById(R.id.feed_id);
-            titleFeed=itemView.findViewById(R.id.feed_title);
+            titleFeed=itemView.findViewById(R.id.feed_desc);
+            titlepin= itemView.findViewById(R.id.pincode);
+            postwriter= itemView.findViewById(R.id.post_writer);
+            numberoflikes= itemView.findViewById(R.id.numberoflikes);
         }
     }
 }

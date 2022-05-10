@@ -32,15 +32,20 @@ import java.util.HashMap;
  * create an instance of this fragment.
  */
 class feedItem implements Serializable {
-    String title;
-    String description;
+    public String id;
+    public String title;
+    public String description;
     String img_path="";
     int pincode;
-
-    public feedItem(String title, String description, int pincode) {
+    String email;
+    String likenumbers="";
+    public feedItem(String title, String description, int pincode, String email,String id) {
+        this.id=id;
         this.title = title;
         this.description = description;
         this.pincode = pincode;
+        this.email=email;
+        this.likenumbers=String.valueOf(0);
     }
     @Override
     public String toString() {
@@ -106,7 +111,7 @@ public class Feed_Fragment extends Fragment {
         // Inflate the layout for this fragment
         view=inflater.inflate(R.layout.fragment_feed, container, false);
         ArrayList<feedItem> feed_arr=new ArrayList<>();
-        feed_arr.add(new feedItem("bhaskar","bhaskar is missing",110020));
+        feed_arr.add(new feedItem("bhaskar","bhaskar is missing",110020,"bhaskar@email","check id"));
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         db.collection("Issue_detail")
                 .get()
@@ -118,7 +123,8 @@ public class Feed_Fragment extends Fragment {
                                 String issue_id = document.getId();
                                 HashMap<String,Object> temp = (HashMap<String, Object>) document.getData();
                                 String c = temp.get("image_path")==null?"": (String) temp.get("image_path");
-                                feedItem ff = new feedItem((String)temp.get("category"),(String)temp.get("description"),Integer.parseInt((String) temp.get("pin_code")));
+                                feedItem ff = new feedItem((String)temp.get("category"),(String)temp.get("description"),Integer.parseInt((String) temp.get("pin_code")), (String) temp.get("email"),issue_id);
+                                Log.i("issue id",issue_id);
                                 map.put(issue_id,ff);
                                 feed_arr.add(ff);
                                 if(adapter!=null)
@@ -153,7 +159,7 @@ public class Feed_Fragment extends Fragment {
         getActivity().registerReceiver(new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
-                feed_arr.add(new feedItem("nitesh is missing","Description-5",115511));
+                feed_arr.add(new feedItem("nitesh is missing","Description-5",115511,"Nitesh@email","nitesh_id"));
             }
         },new IntentFilter("New feed Found"));
         return view;
