@@ -203,6 +203,12 @@ public class AddIssueFragment extends Fragment {
         String description = desc_view.getText().toString();
         String pincode = pincode_view.getText().toString();
         String category = autoCompleteTxt.getText().toString();
+        String error_msg = Validator.validate_issue_raised_data(category,description,pincode);
+        if(error_msg!=null)
+        {
+            Toast.makeText(getContext(),error_msg,Toast.LENGTH_SHORT).show();
+            return;
+        }
         HashMap<String, Object> map = new HashMap<>();
         map.put("description", description);
         map.put("pin_code", pincode);
@@ -220,7 +226,8 @@ public class AddIssueFragment extends Fragment {
 
             @Override
             public void onSuccess(DocumentReference documentReference) {
-                Log.i("donee", "DocumentSnapshot added with ID: " + documentReference.getId());
+                Log.d("IssuesRaised", "DocumentSnapshot added with ID: " + documentReference.getId());
+                Toast.makeText(getContext(),"Issue raised successfully!",Toast.LENGTH_SHORT).show();
             }
         })
                 .addOnFailureListener(new OnFailureListener() {

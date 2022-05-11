@@ -63,14 +63,14 @@ public class Validator {
         }
 
     }
-    public static String validate_login_data(String email, String password){
-        if(email.isEmpty() || !Patterns.EMAIL_ADDRESS.matcher(email).matches()){
+    public static String validate_login_data(String email, String password) {
+        if (email.isEmpty() || !Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
             return "Invalid Email Address!";
         }
 
 
         boolean low = false;
-        boolean up= false;
+        boolean up = false;
         boolean special = false;
         boolean num = false;
 
@@ -89,33 +89,44 @@ public class Validator {
         h.add('+');
         h.add('<');
         h.add('>');
-        for(char c: password.toCharArray())
-        {
-            if(Character.isDigit(c))
-                num=true;
-            else if(Character.isUpperCase(c))
+        for (char c : password.toCharArray()) {
+            if (Character.isDigit(c))
+                num = true;
+            else if (Character.isUpperCase(c))
                 up = true;
-            else if(Character.isLowerCase(c))
+            else if (Character.isLowerCase(c))
                 low = true;
-            else if(h.contains(c))
+            else if (h.contains(c))
                 special = true;
         }
 
-        if(special && low && up && num && password.length()>=8)
+        if (special && low && up && num && password.length() >= 8)
             return null;
-        else
-        {
-            if(special==false)
+        else {
+            if (special == false)
                 return "Password must contain special character";
-            else if(low==false)
+            else if (low == false)
                 return "Password must contain lower case character";
-            else if(up==false)
+            else if (up == false)
                 return "Password must contain upper case character";
-            else if(num==false)
+            else if (num == false)
                 return "Password must contain a digit";
             return "Password is Too Short!";
         }
-
     }
-
+    public static String validate_issue_raised_data(String category, String description, String pincode) {
+        if(category.length()==0 || category.equals(""))
+            return "Please select category";
+        if(description.length()<10)
+            return "Please describe more!";
+        try {
+            int pin = Integer.parseInt(pincode);
+            if (pin < 100000 || pin > 999999)
+                return "Enter a valid pincode!";
+        }
+        catch(Exception e) {
+            return "Enter a valid pincode!";
+        }
+        return null;
+    }
 }
