@@ -23,6 +23,7 @@ public class AfterLoginActivity extends AppCompatActivity implements BottomNavig
     LeaderBoardFragment leaderBoardFragment = new LeaderBoardFragment();
     ProfileFragment profileFragment = new ProfileFragment();
     Feed_Fragment feed_fragment = new Feed_Fragment();
+    SearchFragment searchFragment = new SearchFragment();
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -48,7 +49,7 @@ public class AfterLoginActivity extends AppCompatActivity implements BottomNavig
                 return true;
             case R.id.search_bi:
                 Log.d("check", "onNavigationItemSelected: search");
-                this.getSupportFragmentManager().beginTransaction().replace(R.id.MainContentFragment, dashboardFragment).commit();
+                this.getSupportFragmentManager().beginTransaction().replace(R.id.MainContentFragment, searchFragment).commit();
                 return true;
             case R.id.addpost_bi:
                 Log.d("check", "onNavigationItemSelected: addpost");
