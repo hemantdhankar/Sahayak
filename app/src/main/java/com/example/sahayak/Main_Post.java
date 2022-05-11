@@ -1,6 +1,7 @@
 package com.example.sahayak;
 
 import android.graphics.Color;
+import android.graphics.PorterDuff;
 import android.media.JetPlayer;
 import android.os.Build;
 import android.os.Bundle;
@@ -87,23 +88,43 @@ public class Main_Post extends Fragment {
                              Bundle savedInstanceState) {
 
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        FirebaseFirestore db= FirebaseFirestore.getInstance();
         // Inflate the layout for this fragment
         v= inflater.inflate(R.layout.fragment_main_post, container, false);
+
         TextView title= v.findViewById(R.id.post_title);
         TextView desc= v.findViewById(R.id.post_description);
         TextView pin= v.findViewById(R.id.post_pin);
         TextView numberoflikes= v.findViewById(R.id.numberoflikesmainpost);
+        Button claimissue=v.findViewById(R.id.claimissuebtn);
+        Button issueresolved=v.findViewById(R.id.issueresolvedbtn);
+        Button abortissue=v.findViewById(R.id.abortissuebtn);
+        Button likeButton = v.findViewById(R.id.like_button);
+        Button sharebtn= v.findViewById(R.id.share_button);
+        TextView loading= v.findViewById(R.id.loadingtxt);
+        //
+
+        //inital visibility is 0
+        claimissue.setVisibility(View.GONE);
+        issueresolved.setVisibility(View.GONE);
+        abortissue.setVisibility(View.GONE);
+        likeButton.setVisibility(View.GONE);
+        sharebtn.setVisibility(View.GONE);
 
         Bundle bundle= getArguments();
         feedItem fc= (feedItem) bundle.getSerializable("pos");
 
-        title.setText(fc.title);
-        desc.setText(fc.description);
-        pin.setText(""+fc.pincode);
-        Log.i("innoc",fc.id);
+
+
+        //to check the type of current user
+        final String[] user_type = new String[1];
+
+
+
 
         final HashMap<String, Object>[] current_issue = new HashMap[]{new HashMap<String, Object>()};
-        FirebaseFirestore db= FirebaseFirestore.getInstance();
+        final HashMap<String, Object>[] current_user = new HashMap[]{new HashMap<String, Object>()};
+
         DocumentReference docRef = db.collection("Issue_detail").document(""+fc.id);
         docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
             @Override
@@ -123,9 +144,223 @@ public class Main_Post extends Fragment {
                 }
             }
         });
+        //sleep to give time to load issue details.
+        try {
+            Thread.sleep(3000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        //
+        loading.setVisibility(View.GONE);
+        title.setText(fc.title);
+        desc.setText(fc.description);
+        pin.setText(""+fc.pincode);
+        likeButton.setVisibility(View.VISIBLE);
+        sharebtn.setVisibility(View.VISIBLE);
+
+        FirebaseFirestore db2= FirebaseFirestore.getInstance();
+        Log.i("mail",user.getEmail());
+        DocumentReference docRefuser = db2.collection("users").document(user.getEmail());
+        docRefuser.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                Log.i("usss",""+user_type[0]);
+                if (task.isSuccessful()) {
+                    DocumentSnapshot document = task.getResult();
+                    if (document.exists()) {
+                        current_user[0]= (HashMap<String, Object>) document.getData();
+                        user_type[0] = (String) document.get("type");
+                        ArrayList<String> issueclaimed= (ArrayList<String>) document.get("issue_claims");
+                        Log.i("usss",""+user_type[0]);
+                        if(user_type[0].equals("NGO")|| user_type[0].equals("Social Worker")){
+                            claimissue.setVisibility(View.VISIBLE);
+                            issueresolved.setVisibility(View.VISIBLE);
+                            abortissue.setVisibility(View.VISIBLE);
+                            claimissue.setClickable(true);
+                            issueresolved.setClickable(false);
+                            abortissue.setClickable(false);
+                            abortissue.setVisibility(View.GONE);
+                            issueresolved.setVisibility(View.GONE);
+                            if (!current_issue[0].get("Status").equals("Unclaimed")){
+                                claimissue.setClickable(false);
+                                issueresolved.setClickable(false);
+                                abortissue.setClickable(false);
+                                claimissue.setVisibility(View.GONE);
+                                abortissue.setVisibility(View.GONE);
+                                issueresolved.setVisibility(View.GONE);
+
+                            }
+                            if(issueclaimed.contains(fc.id)){
+                                claimissue.setClickable(false);
+                                issueresolved.setClickable(true);
+                                abortissue.setClickable(true);
+                                claimissue.setVisibility(View.GONE);
+                                issueresolved.setVisibility(View.VISIBLE);
+                                abortissue.setVisibility(View.VISIBLE);
+
+                            }
+
+                        }
+
+                        Log.d("tag", "DocumentSnapshot data: " + document.getData());
+                    } else {
+                        Log.d("tag", "No such document");
+                    }
+                } else {
+                    Log.d("tag", "get failed with ", task.getException());
+                }
+            }
+        });
+
+
+
+        //issue is claimed by yser
+        claimissue.setOnClickListener(new View.OnClickListener() {
+            @RequiresApi(api = Build.VERSION_CODES.N)
+            @Override
+            public void onClick(View view) {
+                claimissue.setVisibility(View.GONE);
+                issueresolved.setVisibility(View.VISIBLE);
+                abortissue.setVisibility(View.VISIBLE);
+                claimissue.setClickable(false);
+                issueresolved.setClickable(true);
+                abortissue.setClickable(true);
+                //change status to claimed
+                current_issue[0].replace("Status","Claimed");
+                db.collection("Issue_detail").document(fc.id).set(current_issue[0]).addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        // on successful completion of this process
+                        // we are displaying the toast message.
+                        Toast.makeText(getActivity(), "You have clamed this issue..", Toast.LENGTH_SHORT).show();
+                    }
+                }).addOnFailureListener(new OnFailureListener() {
+                    // inside on failure method we are
+                    // displaying a failure message.
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Toast.makeText(getActivity(), "Fail to update the number of likes..", Toast.LENGTH_SHORT).show();
+                    }
+                });
+                ArrayList<String> issuesclamied= (ArrayList<String>) current_user[0].get("issue_claims");
+                issuesclamied.add(fc.id);
+                current_user[0].replace("issue_claims",issuesclamied);
+                db.collection("users").document(user.getEmail()).set(current_user[0]).addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        // on successful completion of this process
+                        // we are displaying the toast message.
+                        Toast.makeText(getActivity(), "You have claimed this issue..", Toast.LENGTH_SHORT).show();
+                    }
+                }).addOnFailureListener(new OnFailureListener() {
+                    // inside on failure method we are
+                    // displaying a failure message.
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Toast.makeText(getActivity(), "Fail to update the number of likes..", Toast.LENGTH_SHORT).show();
+                    }
+                });
+            }
+        });
+
+        issueresolved.setOnClickListener(new View.OnClickListener() {
+            @RequiresApi(api = Build.VERSION_CODES.N)
+            @Override
+            public void onClick(View view) {
+
+                current_issue[0].replace("Status","Resolved");
+                db.collection("Issue_detail").document(fc.id).set(current_issue[0]).addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        // on successful completion of this process
+                        // we are displaying the toast message.
+                        Toast.makeText(getActivity(), "You have resolved this issue..", Toast.LENGTH_SHORT).show();
+                    }
+                }).addOnFailureListener(new OnFailureListener() {
+                    // inside on failure method we are
+                    // displaying a failure message.
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Toast.makeText(getActivity(), "Fail to update the status of this post..", Toast.LENGTH_SHORT).show();
+                    }
+                });
+
+                ArrayList<String> issuesclamied= (ArrayList<String>) current_user[0].get("issue_claims");
+                issuesclamied.remove(fc.id);
+                current_user[0].replace("issue_claims",issuesclamied);
+                db.collection("users").document(user.getEmail()).set(current_user[0]).addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        // on successful completion of this process
+                        // we are displaying the toast message.
+                        Toast.makeText(getActivity(), "You have succesfully resolved this issue..", Toast.LENGTH_SHORT).show();
+                    }
+                }).addOnFailureListener(new OnFailureListener() {
+                    // inside on failure method we are
+                    // displaying a failure message.
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Toast.makeText(getActivity(), "Fail to remove the issue from issue claim list.", Toast.LENGTH_SHORT).show();
+                    }
+                });
+                claimissue.setVisibility(View.GONE);
+                abortissue.setVisibility(View.GONE);
+                issueresolved.setVisibility(View.GONE);
+                claimissue.setClickable(false);
+                issueresolved.setClickable(false);
+                abortissue.setClickable(false);
+            }
+        });
+        abortissue.setOnClickListener(new View.OnClickListener() {
+            @RequiresApi(api = Build.VERSION_CODES.N)
+            @Override
+            public void onClick(View view) {
+                current_issue[0].replace("Status","Unclaimed");
+                db.collection("Issue_detail").document(fc.id).set(current_issue[0]).addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        // on successful completion of this process
+                        // we are displaying the toast message.
+                        Toast.makeText(getActivity(), "You have updated the status of this issue..", Toast.LENGTH_SHORT).show();
+                    }
+                }).addOnFailureListener(new OnFailureListener() {
+                    // inside on failure method we are
+                    // displaying a failure message.
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Toast.makeText(getActivity(), "Fail to update the status..", Toast.LENGTH_SHORT).show();
+                    }
+                });
+
+                ArrayList<String> issuesclamied= (ArrayList<String>) current_user[0].get("issue_claims");
+                issuesclamied.remove(fc.id);
+                current_user[0].replace("issue_claims",issuesclamied);
+                db.collection("users").document(user.getEmail()).set(current_user[0]).addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        // on successful completion of this process
+                        // we are displaying the toast message.
+                        Toast.makeText(getActivity(), "You have removed the issue from your claims..", Toast.LENGTH_SHORT).show();
+                    }
+                }).addOnFailureListener(new OnFailureListener() {
+                    // inside on failure method we are
+                    // displaying a failure message.
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Toast.makeText(getActivity(), "Fail to remove the issue claim list.", Toast.LENGTH_SHORT).show();
+                    }
+                });
+                issueresolved.setVisibility(View.GONE);
+                abortissue.setVisibility(View.GONE);
+                claimissue.setVisibility(View.VISIBLE);
+                claimissue.setClickable(true);
+                issueresolved.setClickable(false);
+                abortissue.setClickable(false);
+            }
+        });
+
 
         numberoflikes.setText(""+current_issue[0].get("number_of_likes"));
-        Button likeButton = v.findViewById(R.id.like_button);
         final boolean[] already_liked = {false};
         likeButton.setOnClickListener(new View.OnClickListener() {
             @RequiresApi(api = Build.VERSION_CODES.N)
@@ -199,8 +434,6 @@ public class Main_Post extends Fragment {
                         Toast.makeText(getActivity(), "Fail to update the number of likes..", Toast.LENGTH_SHORT).show();
                     }
                 });
-
-
                 //Toast.makeText(getActivity(),"You have already liked",Toast.LENGTH_LONG).show();
             }
 

@@ -210,7 +210,7 @@ public class AddIssueFragment extends Fragment {
         map.put("image_path",path+".JPEG");
         map.put("email",user.getEmail());
         map.put("number_of_likes",String.valueOf(0));
-
+        map.put("Status","Unclaimed");
         ArrayList<String> likers_initial= new ArrayList<>();
         likers_initial.add("initial");
         map.put("likers",likers_initial);
