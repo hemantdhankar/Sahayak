@@ -9,6 +9,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Adapter;
+import android.widget.Button;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -53,9 +54,11 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.FeedViewHolder
     public void onBindViewHolder(@NonNull FeedViewHolder holder, @SuppressLint("RecyclerView") int position) {
         Log.i("in adapter","-------checkcheck-----");
 
+        //getting current item from the list,recyler view adapter need.
         feedItem item=anotherList.get(position);
         FirebaseFirestore db = FirebaseFirestore.getInstance();
-        FirebaseAuth mAuth=FirebaseAuth.getInstance();
+
+        //reading users table to get username associated with current user email.
         DocumentReference docRef = db.collection("users").document(""+item.email);
         docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
             @Override
@@ -65,6 +68,7 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.FeedViewHolder
                     if (document.exists()) {
                         String name=document.getString("first_name");
                         holder.postwriter.setText(""+name);
+
                         Log.d("tag", "DocumentSnapshot data: " + document.getData());
                     } else {
                         Log.d("tag", "No such document");
@@ -75,19 +79,19 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.FeedViewHolder
             }
         });
 
+        //taking data from firebase to show on feed using id from another list.
         DocumentReference docRefissue = db.collection("Issue_detail").document(""+item.id);
         docRefissue.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
             @Override
             public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                Log.i("innoc","we are here");
                 if (task.isSuccessful()) {
                     DocumentSnapshot document = task.getResult();
                     if (document.exists()) {
                         HashMap<String, Object> current_issue = (HashMap<String, Object>) document.getData();
-                        holder.titleFeed.setText(""+current_issue.get("category"));
+                        holder.titleFeed.setText(""+current_issue.get("description"));
                         holder.titlepin.setText(""+current_issue.get("pin_code"));
-                        holder.numberoflikes.setText(""+current_issue.get("number_of_likes"));
-
+                        holder.numberoflikes.setText("-"+current_issue.get("number_of_likes"));
+                        holder.currentissuestatus.setText(""+current_issue.get("Status"));
                         Log.d("tag", "DocumentSnapshot data: " + document.getData());
                     } else {
                         Log.d("tag", "No such document");
@@ -99,11 +103,7 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.FeedViewHolder
         });
 
 
-
-
-
-
-
+        //traanfer of feeditem package using bundle to main post.
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -133,6 +133,8 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.FeedViewHolder
         public TextView titlepin;
         public TextView postwriter;
         public TextView numberoflikes;
+        public TextView currentissuestatus;
+
         public FeedViewHolder(@NonNull View itemView) {
             super(itemView);
             //numberNews=itemView.findViewById(R.id.feed_id);
@@ -140,6 +142,7 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.FeedViewHolder
             titlepin= itemView.findViewById(R.id.pincode);
             postwriter= itemView.findViewById(R.id.post_writer);
             numberoflikes= itemView.findViewById(R.id.numberoflikes);
+            currentissuestatus=itemView.findViewById(R.id.currentstatustxtview);
         }
     }
 }

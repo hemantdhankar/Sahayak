@@ -25,6 +25,7 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -84,6 +85,8 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
                                     userProfile.put("type", userTypeName);
                                     userProfile.put("first_name", first_name);
                                     userProfile.put("last_name", last_name);
+                                    userProfile.put("issue_claims", new ArrayList<String>());
+                                    userProfile.put("issue_resolved", new ArrayList<String>());
 
                                     db.collection("users")
                                             .document(email)
