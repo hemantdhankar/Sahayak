@@ -111,8 +111,8 @@ public class Feed_Fragment extends Fragment {
         // Inflate the layout for this fragment
         view=inflater.inflate(R.layout.fragment_feed, container, false);
         ArrayList<feedItem> feed_arr=new ArrayList<>();
-        feed_arr.add(new feedItem("bhaskar","bhaskar is missing",110020,"bhaskar@email","check id"));
         FirebaseFirestore db = FirebaseFirestore.getInstance();
+        feed_arr.clear();
         db.collection("Issue_detail")
                 .get()
                 .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
@@ -144,24 +144,12 @@ public class Feed_Fragment extends Fragment {
 
 
         RecyclerView rec_view=view.findViewById(R.id.recycler_view_feed);
-        if(adapter != null){
-
-            adapter.notifyDataSetChanged();
-        }
-        else{
-
-            Log.i("Feed_fragment",""+feed_arr.size());
-            adapter=new FeedAdapter(feed_arr);
-            adapter.notifyDataSetChanged();
-        }
+        Log.i("Feed_fragment",""+feed_arr.size());
+        adapter=new FeedAdapter(feed_arr);
+        adapter.notifyDataSetChanged();
         rec_view.setAdapter(adapter);
         rec_view.setLayoutManager(new LinearLayoutManager(getActivity()));
-        getActivity().registerReceiver(new BroadcastReceiver() {
-            @Override
-            public void onReceive(Context context, Intent intent) {
-                feed_arr.add(new feedItem("nitesh is missing","Description-5",115511,"Nitesh@email","nitesh_id"));
-            }
-        },new IntentFilter("New feed Found"));
+
         return view;
     }
 }
