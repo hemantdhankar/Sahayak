@@ -31,9 +31,11 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.storage.FileDownloadTask;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -47,6 +49,7 @@ public class Main_Post extends Fragment {
 
 
     View v;
+    StorageReference storage_ref;
 
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -107,8 +110,9 @@ public class Main_Post extends Fragment {
         Button likeButton = v.findViewById(R.id.like_button);
         Button sharebtn= v.findViewById(R.id.share_button);
         ImageView issue_image= v.findViewById((R.id.issue_image));
+        ImageView imageview=v.findViewById(R.id.issue_image);
         //
-
+        storage_ref = FirebaseStorage.getInstance().getReference();
         //inital visibility is 0
         claimissue.setVisibility(View.GONE);
         issueresolved.setVisibility(View.GONE);
@@ -141,7 +145,28 @@ public class Main_Post extends Fragment {
                         current_issue[0] = (HashMap<String, Object>) document.getData();
                         numberoflikes.setText(""+current_issue[0].get("number_of_likes"));
                         String image_path= (String) current_issue[0].get("image_path");
+                        String path=current_issue[0].get("image_path").toString();
+                        Log.d("pathh", " "+path);
+                        storage_ref = FirebaseStorage.getInstance().getReference().child(path);
+                        try{
+                            final File localFile=File.createTempFile("temp","jpeg");
+                            storage_ref.getFile(localFile).addOnSuccessListener(new OnSuccessListener<FileDownloadTask.TaskSnapshot>() {
+                                @Override
+                                public void onSuccess(FileDownloadTask.TaskSnapshot taskSnapshot) {
+                                    Bitmap bitmap=BitmapFactory.decodeFile(localFile.getAbsolutePath());
+                                    imageview.setImageBitmap(bitmap);
+                                }
+                            }).addOnFailureListener(new OnFailureListener(){
 
+                                @Override
+                                public void onFailure(@NonNull Exception e) {
+
+                                }
+                            });
+                        }
+                        catch(Exception e){
+
+                        }
 
                         //to avoid 3 secs delay
                         title.setText(fc.title);
