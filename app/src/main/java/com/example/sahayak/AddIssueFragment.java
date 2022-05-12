@@ -1,17 +1,29 @@
 package com.example.sahayak;
 
+import static android.content.Context.LOCATION_SERVICE;
+
+import android.Manifest;
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
+import android.location.Geocoder;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
 import android.provider.MediaStore;
+import android.provider.Settings;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -39,6 +51,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.UUID;
 
 /**
@@ -61,7 +74,14 @@ public class AddIssueFragment extends Fragment {
     private final int PICK_IMAGE_REQUEST = 22;
     View root_view;
     Button Camera_Button,Upload_Button,Raise_Button;
-
+    private LocationManager locationManager;
+    private LocationListener listener;
+    Location location;
+    double latitude;
+    Geocoder geocoder;
+    double longitude;
+    private String TAG="AddIssueFragment";
+    private String address="Oops! Address Not Found.";
 
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -86,6 +106,50 @@ public class AddIssueFragment extends Fragment {
         startActivityForResult(intent,101);
 
     }
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        geocoder = new Geocoder(getContext(), Locale.getDefault());
+        requestPermissions(new String[]{Manifest.permission.INTERNET, Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION}
+                , 5);
+    }
+
+    @SuppressLint("NewApi")
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == 5) {
+            locationManager = (LocationManager) getActivity().getSystemService(LOCATION_SERVICE);
+            listener = new LocationListener() {
+                @Override
+                public void onLocationChanged(@NonNull Location location) {
+                    latitude = location.getLatitude();
+                    longitude = location.getLongitude();
+                    Log.i(TAG, String.valueOf(latitude) + " " + String.valueOf(longitude));
+                    try {
+                        address = geocoder.getFromLocation(latitude, longitude, 1).get(0).getAddressLine(0);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+
+                @Override
+                public void onProviderDisabled(String s) {
+                    Intent i = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+                    startActivity(i);
+                }
+            };
+            if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                return;
+            }
+            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000, 0, listener);
+            location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+        }else{
+            return;
+        }
+    }
+
     @Override
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data)
     {
@@ -199,7 +263,13 @@ public class AddIssueFragment extends Fragment {
 
     //to save issue to database
     public void raise_issue(View v){
-
+        if(ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.INTERNET)!= PackageManager.PERMISSION_GRANTED ||
+                ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION)!= PackageManager.PERMISSION_GRANTED ||
+                ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION)!= PackageManager.PERMISSION_GRANTED)
+        {
+            Toast.makeText(getContext(),"Please give location access",Toast.LENGTH_SHORT).show();
+            return;
+        }
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         String description = desc_view.getText().toString();
         String pincode = pincode_view.getText().toString();
@@ -221,6 +291,9 @@ public class AddIssueFragment extends Fragment {
         map.put("number_of_likes",String.valueOf(0));
         map.put("title",title);
         map.put("Status","Unclaimed");
+        map.put("latitude", latitude);
+        map.put("longitude", longitude);
+        map.put("address", address);
         ArrayList<String> likers_initial= new ArrayList<>();
         likers_initial.add("initial");
         map.put("likers",likers_initial);
@@ -328,6 +401,7 @@ public class AddIssueFragment extends Fragment {
 
             }
         });
+
 
         return root_view;
     }
