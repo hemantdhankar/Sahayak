@@ -323,7 +323,7 @@ public class SearchFragment extends Fragment {
                                             feedItem ff = new feedItem((String) temp.get("category"), (String) temp.get("description"), Integer.parseInt((String) temp.get("pin_code")), (String) temp.get("email"), issue_id);
                                             Log.i("issue id", issue_id);
                                             map.put(issue_id, ff);
-                                            int match_score = lc.lock_match((String) temp.get("description") + " " + (String) temp.get("category"), search_str);
+                                            int match_score = lc.lock_match((String) temp.get("description") + " " + (String) temp.get("category")+" "+(String) temp.get("title"), search_str);
                                             Log.d("match_score", "onComplete: " + match_score);
                                             if (match_score > 0) {
                                                 feed_arr.add(ff);
@@ -356,10 +356,10 @@ public class SearchFragment extends Fragment {
                                             if (temp.get("type").equals("NGO")) {
                                                 feedItem ff = new feedItem((String) temp.get("first_name"), (String) temp.get("email"), user_id);
                                                 Log.i("NGO id", "" + temp.get("first_name"));
-                                                int match_score = 0;
-                                                if (search_str.equals(temp.get("first_name")))
-                                                    match_score = 1;
-//                                            int match_score = lc.lock_match((String) temp.get("first_name") + " " + (String) temp.get("last_name"), search_str);
+//                                                int match_score = 0;
+//                                                if (search_str.equals(temp.get("first_name")))
+//                                                    match_score = 1;
+                                            int match_score = lc.lock_match((String) temp.get("first_name") + " " + (String) temp.get("last_name"), search_str);
                                                 Log.d("match_score", "onComplete: " + match_score);
                                                 if (match_score > 0) {
                                                     feed_arr.add(ff);

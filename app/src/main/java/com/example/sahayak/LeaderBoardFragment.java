@@ -32,6 +32,7 @@ import java.util.stream.Collectors;
  * Use the {@link LeaderBoardFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
+
 public class LeaderBoardFragment extends Fragment {
 
     // TODO: Rename parameter arguments, choose names that match
@@ -83,7 +84,49 @@ public class LeaderBoardFragment extends Fragment {
         // Inflate the layout for this fragment
         v=inflater.inflate(R.layout.fragment_leader_board, container, false);
         HashMap<String,Integer> top_3_user = new HashMap<>();
+        HashMap<String, Integer> top_3_ngo = new HashMap<>();
         FirebaseFirestore database = FirebaseFirestore.getInstance();
+
+        database.collection("users")
+                .get()
+                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        if (task.isSuccessful()) {
+                            for (QueryDocumentSnapshot document : task.getResult()) {
+                                String user_id = document.getId();
+                                HashMap<String, Object> temp = (HashMap<String, Object>) document.getData();
+                                if (temp.get("type").equals("NGO")) {
+                                    int size = ((ArrayList<String>) temp.get("issue_resolved")).size();
+                                    top_3_ngo.put((String) temp.get("first_name")+" "+(String) temp.get("last_name"),size);
+                                }
+                            }
+
+                            List<String> ngo_keys = top_3_ngo.entrySet().stream().sorted(Map.Entry.<String, Integer>comparingByValue().reversed()).limit(3).map(Map.Entry::getKey).collect(Collectors.toList());
+                            for(String name:ngo_keys)
+                            {
+                                if(ngo_keys.indexOf(name)==0)
+                                {
+                                    TextView ngo1=(TextView) v.findViewById(R.id.ngo_1);
+                                    ngo1.setText(name);
+                                }
+                                if(ngo_keys.indexOf(name)==1)
+                                {
+                                    TextView ngo2=(TextView) v.findViewById(R.id.ngo_2);
+                                    ngo2.setText(name);
+                                }
+                                if(ngo_keys.indexOf(name)==2)
+                                {
+                                    TextView ngo3=(TextView) v.findViewById(R.id.ngo_3);
+                                    ngo3.setText(name);
+                                }
+                            }
+                            Log.d("top3ngo", "onComplete: "+ngo_keys.toString()+top_3_ngo);
+                        } else{
+                            Log.w("Feed_Fragment", "Error getting documents.", task.getException());
+                        }
+                    }
+                });
         database.collection("Issue_detail")
                 .get()
                 .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
@@ -111,7 +154,8 @@ public class LeaderBoardFragment extends Fragment {
                                 Log.d("read successful", document.getId() + " => " + document.getData());
                             }
                             List<String> keys = top_3_user.entrySet().stream().sorted(Map.Entry.<String, Integer>comparingByValue().reversed()).limit(3).map(Map.Entry::getKey).collect(Collectors.toList());
-                            Log.d("top3", "onComplete: "+keys.toString());
+                            Log.d("top3", "onComplete: "+keys.toString()+top_3_user);
+
                             List<String> keys_name=new ArrayList<>();
 
                             for(String email:keys)
@@ -168,6 +212,8 @@ public class LeaderBoardFragment extends Fragment {
                         }
                     }
                 });
+
+
 
 
 //        database.collection("users")
