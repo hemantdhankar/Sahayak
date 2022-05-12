@@ -29,6 +29,8 @@
         <entry key="..\:/downloads/Sahayak/app/src/main/res/layout/activity_main.xml" value="0.175" />
         <entry key="..\:/downloads/Sahayak/app/src/main/res/layout/activity_raise_feature.xml" value="0.1" />
         <entry key="..\:/downloads/Sahayak/app/src/main/res/layout/activity_raise_issue.xml" value="0.175" />
+        <entry key="..\:/downloads/Sahayak/app/src/main/res/layout/fragment_add_issue.xml" value="0.1" />
+        <entry key="..\:/downloads/Sahayak/app/src/main/res/layout/fragment_main_post.xml" value="0.1640625" />
         <entry key="..\:/downloads/Sahayak/app/src/main/res/layout/list_item_dropdown.xml" value="0.175" />
       </map>
     </option>

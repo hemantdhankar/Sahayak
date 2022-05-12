@@ -23,6 +23,8 @@
         </TextView>
 
 
+
+
         <com.google.android.material.textfield.TextInputLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -40,6 +42,33 @@
                 android:textColorHint="#a4c639"
                 tools:ignore="TextContrastCheck" />
         </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="80dp"
+            android:layout_margin="16dp"
+            android:textAlignment="center"
+            android:hint="Title"
+            >
+            <EditText
+                android:layout_width="match_parent"
+                android:id="@+id/title_box"
+                android:layout_height="wrap_content"
+                android:inputType="textMultiLine"
+                android:ems="10"
+                android:editable="true"
+                android:enabled="true"
+                android:minLines="6"
+                android:maxLines="6"
+                android:isScrollContainer="true"
+                android:background="#fafafa"
+                android:textIsSelectable="true"
+                android:focusable="true"
+                android:gravity="top"
+                android:padding="24dp">
+            </EditText>
+        </com.google.android.material.textfield.TextInputLayout>
+
 
         <com.google.android.material.textfield.TextInputLayout
             android:layout_width="match_parent"

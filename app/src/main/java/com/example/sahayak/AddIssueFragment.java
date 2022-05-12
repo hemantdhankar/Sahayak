@@ -50,7 +50,7 @@ public class AddIssueFragment extends Fragment {
     String[] items =  {"Transport","Electricity","Food","Water","Sewage","Roads","Animals","Old Citizens","Garbage","Donations"};
     protected AutoCompleteTextView autoCompleteTxt;
     protected ArrayAdapter<String> adapterItems;
-    protected EditText desc_view,pincode_view;
+    protected EditText desc_view,pincode_view,title_view;
     protected FirebaseFirestore database;
     protected ImageView image_view;
     protected StorageReference storage_ref;
@@ -199,10 +199,13 @@ public class AddIssueFragment extends Fragment {
 
     //to save issue to database
     public void raise_issue(View v){
+
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         String description = desc_view.getText().toString();
         String pincode = pincode_view.getText().toString();
         String category = autoCompleteTxt.getText().toString();
+        String title=title_view.getText().toString();
+
         String error_msg = Validator.validate_issue_raised_data(category,description,pincode);
         if(error_msg!=null)
         {
@@ -216,6 +219,7 @@ public class AddIssueFragment extends Fragment {
         map.put("image_path",path+".JPEG");
         map.put("email",user.getEmail());
         map.put("number_of_likes",String.valueOf(0));
+        map.put("title",title);
         map.put("Status","Unclaimed");
         ArrayList<String> likers_initial= new ArrayList<>();
         likers_initial.add("initial");
@@ -283,6 +287,7 @@ public class AddIssueFragment extends Fragment {
         Raise_Button=(Button)root_view.findViewById(R.id.raise_issue_button) ;
         autoCompleteTxt = root_view.findViewById(R.id.auto_complete_txt);
         desc_view=(EditText)root_view.findViewById(R.id.desc_box);
+        title_view=(EditText)root_view.findViewById(R.id.title_box);
         pincode_view=(EditText)root_view.findViewById(R.id.pincode_box);
         image_view=(ImageView)root_view.findViewById(R.id.image_box);
         adapterItems = new ArrayAdapter<String>(getActivity(),R.layout.list_item_dropdown,items);

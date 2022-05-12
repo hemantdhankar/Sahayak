@@ -1,42 +1,168 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
     tools:context=".RaiseFeature"
-    android:background="@drawable/background_portrait">
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/app_name"
-        android:textAlignment="center"
-        android:layout_gravity="center"
-        android:textSize="40sp"
-        android:textFontWeight="50">
-    </TextView>
-    <androidx.coordinatorlayout.widget.CoordinatorLayout
+    tools:ignore="HardcodedText">
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:background="@drawable/background_portrait"
+        android:orientation="vertical">
 
-    <com.google.android.material.textfield.TextInputLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="16dp"
-        android:textAlignment="center"
-        android:hint="@string/select"
-        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu">
-
-        <AutoCompleteTextView
-            android:id="@+id/auto_complete_txt"
-            android:layout_width="369dp"
+        <TextView
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:hint="@string/select"
-            android:inputType="none"
-            android:textColorHint="#616161"
-            tools:ignore="TextContrastCheck" />
-    </com.google.android.material.textfield.TextInputLayout>
-    </androidx.coordinatorlayout.widget.CoordinatorLayout>
+            android:text="@string/app_name"
+            android:textAlignment="center"
+            android:layout_gravity="center"
+            android:textSize="40sp"
+            android:textFontWeight="50">
+        </TextView>
 
-</LinearLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="16dp"
+            android:textAlignment="center"
+            android:hint="@string/select"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu">
+
+            <AutoCompleteTextView
+                android:id="@+id/auto_complete_txt"
+                android:layout_width="369dp"
+                android:layout_height="wrap_content"
+                android:hint=""
+                android:inputType="none"
+                android:textColorHint="#a4c639"
+                tools:ignore="TextContrastCheck" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="16dp"
+            android:textAlignment="center"
+            android:hint="@string/describe_issue"
+            >
+            <EditText
+                android:layout_width="match_parent"
+                android:id="@+id/desc_box"
+                android:layout_height="wrap_content"
+                android:inputType="textMultiLine"
+                android:ems="10"
+                android:editable="true"
+                android:enabled="true"
+                android:minLines="6"
+                android:maxLines="6"
+                android:isScrollContainer="true"
+                android:background="#fafafa"
+                android:textIsSelectable="true"
+                android:focusable="true"
+                android:gravity="top"
+                android:padding="24dp">
+            </EditText>
+        </com.google.android.material.textfield.TextInputLayout>
+
+
+
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="16dp"
+            android:textAlignment="center"
+            android:hint="@string/describe_issue"
+            >
+            <EditText
+                android:layout_width="match_parent"
+                android:id="@+id/title_box"
+                android:layout_height="wrap_content"
+                android:inputType="textMultiLine"
+                android:ems="10"
+                android:editable="true"
+                android:enabled="true"
+                android:minLines="6"
+                android:maxLines="6"
+                android:isScrollContainer="true"
+                android:background="#fafafa"
+                android:textIsSelectable="true"
+                android:focusable="true"
+                android:gravity="top"
+                android:padding="24dp">
+            </EditText>
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="16dp"
+            android:textAlignment="center"
+            android:hint="@string/pincode"
+            >
+            <EditText
+                android:layout_width="match_parent"
+                android:id="@+id/pincode_box"
+                android:layout_height="wrap_content"
+                android:ems="10"
+                android:editable="true"
+                android:enabled="true"
+                android:maxLines="1"
+                android:isScrollContainer="true"
+                android:background="#fafafa"
+                android:textIsSelectable="true"
+                android:focusable="true"
+                android:gravity="top"
+                android:padding="24dp">
+            </EditText>
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <ImageView
+            android:layout_width="400dp"
+            android:layout_height="100dp"
+            android:id="@+id/image_box">
+        </ImageView>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:orientation="horizontal">
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/camera_icon"
+                android:layout_marginLeft="100dp"
+                android:layout_gravity="center"
+                android:id="@+id/camera_button_id"
+                android:onClick="camera_click">
+            </Button>
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/upload_image_icon"
+                android:layout_marginRight="60dp"
+                android:onClick="select_image"
+                android:id="@+id/upload_button_id"
+                >
+            </Button>
+
+        </LinearLayout>
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:text="Raise Issue"
+            android:id="@+id/raise_issue_button"
+            android:onClick="raise_issue"
+            >
+        </Button>
+
+        <!--This image is custom made GeeksforGeeks logo-->
+
+    </LinearLayout>
+
+</ScrollView>

@@ -114,7 +114,6 @@ public class RaiseFeature extends AppCompatActivity {
                     image_view.setImageBitmap(bitmap);
                     upload_from_gallery();
                 }
-
                 catch (IOException e) {
                     // Log the exception
                     e.printStackTrace();
