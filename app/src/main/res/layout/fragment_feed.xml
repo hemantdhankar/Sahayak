@@ -9,8 +9,8 @@
     <TextView
         android:id="@+id/feed_title"
         android:layout_width="match_parent"
-        android:text="FEED"
-        android:textSize="40sp"
+        android:text="Feed"
+        android:textSize="30sp"
         android:textAlignment="center"
         android:layout_height="wrap_content"
 

@@ -77,7 +77,7 @@ public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.SearchFeed
                         HashMap<String, Object> current_issue = (HashMap<String, Object>) document.getData();
                         holder.titleFeed.setText(""+current_issue.get("description"));
                         holder.titlepin.setText(""+current_issue.get("pin_code"));
-                        holder.numberoflikes.setText("-"+current_issue.get("number_of_likes"));
+                        holder.numberoflikes.setText(" "+current_issue.get("number_of_likes"));
                         holder.currentissuestatus.setText(""+current_issue.get("Status"));
                         Log.d("tag", "DocumentSnapshot data: " + document.getData());
                     } else {
