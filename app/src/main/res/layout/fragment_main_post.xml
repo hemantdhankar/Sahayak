@@ -88,6 +88,13 @@
                 android:text="Loading...."
                 android:layout_height="wrap_content">
             </TextView>
+
+            <ImageView
+                android:id="@+id/issue_image"
+                android:layout_width="300dp"
+                android:layout_height="200sp">
+            </ImageView>
+
         </LinearLayout>
 
     </ScrollView>

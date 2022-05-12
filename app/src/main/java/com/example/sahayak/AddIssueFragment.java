@@ -216,7 +216,7 @@ public class AddIssueFragment extends Fragment {
         map.put("description", description);
         map.put("pin_code", pincode);
         map.put("category", category);
-        map.put("image_path",path+".JPEG");
+        map.put("image_path",path);
         map.put("email",user.getEmail());
         map.put("number_of_likes",String.valueOf(0));
         map.put("title",title);

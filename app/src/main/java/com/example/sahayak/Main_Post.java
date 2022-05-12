@@ -1,5 +1,7 @@
 package com.example.sahayak;
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.media.JetPlayer;
@@ -16,6 +18,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -23,12 +26,17 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.common.primitives.Bytes;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.storage.FileDownloadTask;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -42,6 +50,7 @@ public class Main_Post extends Fragment {
 
 
     View v;
+    StorageReference storage_ref;
 
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -102,6 +111,8 @@ public class Main_Post extends Fragment {
         Button likeButton = v.findViewById(R.id.like_button);
         Button sharebtn= v.findViewById(R.id.share_button);
         TextView loading= v.findViewById(R.id.loadingtxt);
+        ImageView imageview=v.findViewById(R.id.issue_image);
+        storage_ref = FirebaseStorage.getInstance().getReference();
         //
 
         //inital visibility is 0
@@ -134,13 +145,35 @@ public class Main_Post extends Fragment {
                     DocumentSnapshot document = task.getResult();
                     if (document.exists()) {
                         current_issue[0] = (HashMap<String, Object>) document.getData();
+                        String path=current_issue[0].get("image_path").toString();
+                        Log.d("pathh", " "+path);
+                        storage_ref = FirebaseStorage.getInstance().getReference().child(path);
+                        try{
+                            final File localFile=File.createTempFile("temp","jpeg");
+                            storage_ref.getFile(localFile).addOnSuccessListener(new OnSuccessListener<FileDownloadTask.TaskSnapshot>() {
+                                @Override
+                                public void onSuccess(FileDownloadTask.TaskSnapshot taskSnapshot) {
+                                    Bitmap bitmap=BitmapFactory.decodeFile(localFile.getAbsolutePath());
+                                    imageview.setImageBitmap(bitmap);
+                                }
+                            }).addOnFailureListener(new OnFailureListener(){
+
+                                @Override
+                                public void onFailure(@NonNull Exception e) {
+
+                                }
+                            });
+                        }
+                        catch(Exception e){
+
+                        }
                         numberoflikes.setText(""+current_issue[0].get("number_of_likes"));
                         Log.d("tag", "DocumentSnapshot data: " + document.getData());
                     } else {
                         Log.d("tag", "No such document");
                     }
                 } else {
-                    Log.d("tag", "get failed with ", task.getException());
+                    Log.d("tag", "get failed with "+task.getException());
                 }
             }
         });
@@ -170,6 +203,7 @@ public class Main_Post extends Fragment {
                     if (document.exists()) {
                         current_user[0]= (HashMap<String, Object>) document.getData();
                         user_type[0] = (String) document.get("type");
+
                         ArrayList<String> issueclaimed= (ArrayList<String>) document.get("issue_claims");
                         Log.i("usss",""+user_type[0]);
                         if(user_type[0].equals("NGO")|| user_type[0].equals("Social Worker")){
