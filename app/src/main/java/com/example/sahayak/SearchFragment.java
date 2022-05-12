@@ -15,6 +15,8 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.SearchView;
 import android.widget.Toast;
 
@@ -38,9 +40,10 @@ import java.util.HashMap;
 public class SearchFragment extends Fragment {
 
     View view;
-    HashMap<String,feedItem> map = new HashMap<>();
     RecyclerView.Adapter adapter;
     SearchView searchView;
+    RadioGroup rg;
+    RadioButton radioButton_feed,radioButton_ngo;
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
@@ -289,6 +292,10 @@ public class SearchFragment extends Fragment {
         // Inflate the layout for this fragment
         view=inflater.inflate(R.layout.fragment_search, container, false);
         searchView = (SearchView) view.findViewById(R.id.searchView);
+        rg = (RadioGroup) view.findViewById(R.id.searchType);
+        radioButton_feed = (RadioButton) view.findViewById(R.id.radioButton_feed);
+        radioButton_ngo = (RadioButton) view.findViewById(R.id.radioButton_ngo);
+        RecyclerView rec_view=view.findViewById(R.id.recycler_view_feed_search);
 
         ArrayList<feedItem> feed_arr=new ArrayList<>();
         LockMatch lc=new LockMatch();
@@ -299,47 +306,83 @@ public class SearchFragment extends Fragment {
 
                 Toast.makeText(getContext(), search_str, Toast.LENGTH_SHORT).show();
                 FirebaseFirestore db = FirebaseFirestore.getInstance();
-                db.collection("Issue_detail")
-                        .get()
-                        .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                            @Override
-                            public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                                if (task.isSuccessful()) {
+                int selected = rg.getCheckedRadioButtonId();
+                if(selected == view.findViewById(R.id.radioButton_feed).getId()) {
+                    HashMap<String,feedItem> map = new HashMap<>();
+                    db.collection("Issue_detail")
+                            .get()
+                            .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                                @Override
+                                public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                                    if (task.isSuccessful()) {
 
-                                    for (QueryDocumentSnapshot document : task.getResult()) {
-                                        String issue_id = document.getId();
-                                        HashMap<String,Object> temp = (HashMap<String, Object>) document.getData();
-                                        String c = temp.get("image_path")==null?"": (String) temp.get("image_path");
-                                        feedItem ff = new feedItem((String)temp.get("category"),(String)temp.get("description"),Integer.parseInt((String) temp.get("pin_code")), (String) temp.get("email"),issue_id);
-                                        Log.i("issue id",issue_id);
-                                        map.put(issue_id,ff);
-                                        int match_score=lc.lock_match((String)temp.get("description")+" "+(String)temp.get("category"),search_str);
-                                        Log.d("match_score", "onComplete: "+match_score);
-                                        if(match_score>0)
-                                        {
-                                            feed_arr.add(ff);
+                                        for (QueryDocumentSnapshot document : task.getResult()) {
+                                            String issue_id = document.getId();
+                                            HashMap<String, Object> temp = (HashMap<String, Object>) document.getData();
+                                            String c = temp.get("image_path") == null ? "" : (String) temp.get("image_path");
+                                            feedItem ff = new feedItem((String) temp.get("category"), (String) temp.get("description"), Integer.parseInt((String) temp.get("pin_code")), (String) temp.get("email"), issue_id);
+                                            Log.i("issue id", issue_id);
+                                            map.put(issue_id, ff);
+                                            int match_score = lc.lock_match((String) temp.get("description") + " " + (String) temp.get("category"), search_str);
+                                            Log.d("match_score", "onComplete: " + match_score);
+                                            if (match_score > 0) {
+                                                feed_arr.add(ff);
+                                            }
+                                            if (adapter != null)
+                                                adapter.notifyDataSetChanged();
+                                            else {
+                                                adapter = new SearchAdapter(feed_arr,rg, radioButton_feed,radioButton_ngo);
+                                                adapter.notifyDataSetChanged();
+                                            }
+                                            Log.i("Feed_fragment", "" + ff.toString());
                                         }
-                                        if(adapter!=null)
-                                            adapter.notifyDataSetChanged();
-                                        else
-                                        {
-                                            adapter = new FeedAdapter(feed_arr);
-                                            adapter.notifyDataSetChanged();
-                                        }
-                                        Log.i("Feed_fragment",""+ff.toString());
+                                    } else {
+                                        Log.w("Feed_Fragment", "Error getting documents.", task.getException());
                                     }
-                                } else {
-                                    Log.w("Feed_Fragment", "Error getting documents.", task.getException());
                                 }
-                            }
-                        });
-                RecyclerView rec_view=view.findViewById(R.id.recycler_view_feed_search);
+                            });
+                }
+                else if(selected == view.findViewById(R.id.radioButton_ngo).getId())
+                {
+                    db.collection("users")
+                            .get()
+                            .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                                @Override
+                                public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                                    if (task.isSuccessful()) {
+                                        for (QueryDocumentSnapshot document : task.getResult()) {
+                                            String user_id = document.getId();
+                                            HashMap<String, Object> temp = (HashMap<String, Object>) document.getData();
+                                            if (temp.get("type").equals("NGO")) {
+                                                feedItem ff = new feedItem((String) temp.get("first_name"), (String) temp.get("email"), user_id);
+                                                Log.i("NGO id", "" + temp.get("first_name"));
+                                                int match_score = 0;
+                                                if (search_str.equals(temp.get("first_name")))
+                                                    match_score = 1;
+//                                            int match_score = lc.lock_match((String) temp.get("first_name") + " " + (String) temp.get("last_name"), search_str);
+                                                Log.d("match_score", "onComplete: " + match_score);
+                                                if (match_score > 0) {
+                                                    feed_arr.add(ff);
+                                                }
+                                                if (adapter != null)
+                                                    adapter.notifyDataSetChanged();
+                                                else {
+                                                    adapter = new SearchAdapter(feed_arr,rg,radioButton_feed,radioButton_ngo);
+                                                    adapter.notifyDataSetChanged();
+                                                }
+                                            }
+                                        }
+                                        } else{
+                                            Log.w("Feed_Fragment", "Error getting documents.", task.getException());
+                                        }
+                                }
+                            });
+                }
                 if(adapter != null){
                     adapter.notifyDataSetChanged();
                 }
                 else{
-                    Log.i("Feed_fragment",""+feed_arr.size());
-                    adapter=new FeedAdapter(feed_arr);
+                    adapter = new SearchAdapter(feed_arr,rg,radioButton_feed,radioButton_ngo);
                     adapter.notifyDataSetChanged();
                 }
                 rec_view.setAdapter(adapter);
