@@ -47,6 +47,12 @@ class feedItem implements Serializable {
         this.email=email;
         this.likenumbers=String.valueOf(0);
     }
+    public feedItem(String name, String email,String id) {
+        this.id=id;
+        this.title = name;
+//        this.pincode = pincode;
+        this.email=email;
+    }
     @Override
     public String toString() {
         return "feedItem{" +
@@ -60,7 +66,6 @@ class feedItem implements Serializable {
 public class Feed_Fragment extends Fragment {
 
     HashMap<String,feedItem> map = new HashMap<>();
-//    ArrayList<feedItem> feed_arr=new ArrayList<>();
     View view;
     RecyclerView.Adapter adapter;
 

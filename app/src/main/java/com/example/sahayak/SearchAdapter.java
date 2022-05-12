@@ -1,48 +1,69 @@
 package com.example.sahayak;
 
 
-
+import android.annotation.SuppressLint;
 import android.os.Bundle;
+import android.os.Message;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Adapter;
+import android.widget.Button;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.RecyclerView;
 
-
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.annotations.Nullable;
+import com.google.firebase.firestore.DocumentChange;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.QuerySnapshot;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
 
-public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.SearchFeedViewHolder>{
+public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.SearchViewHolder>{
 
-    private ArrayList<feedItem> feeds;
-    public SearchAdapter(ArrayList<feedItem> list)
+    private java.util.ArrayList<feedItem> anotherList;
+    RadioGroup rg;
+    RadioButton radioButton_feed, radioButton_ngo;
+
+    public  SearchAdapter(ArrayList<feedItem> list, RadioGroup rg, RadioButton radioButton_feed, RadioButton radioButton_ngo)
     {
-        this.feeds = list;
+        this.anotherList = list;
+        this.radioButton_ngo = radioButton_ngo;
+        this.radioButton_feed = radioButton_feed;
+        this.rg = rg;
     }
-
     @NonNull
     @Override
-    public SearchFeedViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+
+    public SearchViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        Log.i("in adapter","------checkcheck-----");
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.feed_item, parent, false);
-        SearchFeedViewHolder holder=new SearchFeedViewHolder(view);
+        SearchViewHolder  holder=new SearchViewHolder(view);
         return holder;
     }
 
     @Override
-    public void onBindViewHolder(@NonNull SearchFeedViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull SearchViewHolder holder, @SuppressLint("RecyclerView") int position) {
+        Log.i("in adapter","-------checkcheck-----");
+
         //getting current item from the list,recyler view adapter need.
-        feedItem item=feeds.get(position);
+        feedItem item=anotherList.get(position);
         FirebaseFirestore db = FirebaseFirestore.getInstance();
 
         //reading users table to get username associated with current user email.
@@ -90,29 +111,32 @@ public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.SearchFeed
         });
 
 
-        //traanfer of feeditem package using bundle to main post.
-        holder.itemView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Log.i("adapter","onclickcheck");
-                Bundle bundle= new Bundle();
-                bundle.putSerializable("pos", item);
-                AppCompatActivity ac= (AppCompatActivity) v.getContext();
-                Main_Post ff= new Main_Post();
-                ff.setArguments(bundle);
-                ac.getSupportFragmentManager().beginTransaction().replace(R.id.MainContentFragment,ff)
-                        .addToBackStack(null)
-                        .commit();
-            }
-        });
+        if(rg.getCheckedRadioButtonId()==radioButton_feed.getId()) {
+            //traanfer of feeditem package using bundle to main post.
+            holder.itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Log.i("adapter", "onclickcheck");
+                    Bundle bundle = new Bundle();
+                    bundle.putSerializable("pos", item);
+                    AppCompatActivity ac = (AppCompatActivity) v.getContext();
+                    Main_Post ff = new Main_Post();
+                    ff.setArguments(bundle);
+                    ac.getSupportFragmentManager().beginTransaction().replace(R.id.MainContentFragment, ff)
+                            .addToBackStack(null)
+                            .commit();
+                }
+            });
+        }
     }
-
     @Override
+
     public int getItemCount() {
-        return 0;
+        return anotherList.size();
     }
 
-    public class SearchFeedViewHolder extends RecyclerView.ViewHolder {
+
+    public class SearchViewHolder extends RecyclerView.ViewHolder {
 
         //public TextView numberNews;
         public TextView titleFeed;
@@ -121,7 +145,7 @@ public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.SearchFeed
         public TextView numberoflikes;
         public TextView currentissuestatus;
 
-        public SearchFeedViewHolder(@NonNull View itemView) {
+        public SearchViewHolder(@NonNull View itemView) {
             super(itemView);
             //numberNews=itemView.findViewById(R.id.feed_id);
             titleFeed=itemView.findViewById(R.id.feed_desc);
