@@ -295,6 +295,7 @@ public class SearchFragment extends Fragment {
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String search_str) {
+                feed_arr.clear();
 
                 Toast.makeText(getContext(), search_str, Toast.LENGTH_SHORT).show();
                 FirebaseFirestore db = FirebaseFirestore.getInstance();
@@ -304,6 +305,7 @@ public class SearchFragment extends Fragment {
                             @Override
                             public void onComplete(@NonNull Task<QuerySnapshot> task) {
                                 if (task.isSuccessful()) {
+
                                     for (QueryDocumentSnapshot document : task.getResult()) {
                                         String issue_id = document.getId();
                                         HashMap<String,Object> temp = (HashMap<String, Object>) document.getData();
@@ -316,9 +318,7 @@ public class SearchFragment extends Fragment {
                                         if(match_score>0)
                                         {
                                             feed_arr.add(ff);
-
                                         }
-
                                         if(adapter!=null)
                                             adapter.notifyDataSetChanged();
                                         else
@@ -333,8 +333,18 @@ public class SearchFragment extends Fragment {
                                 }
                             }
                         });
-
-
+                RecyclerView rec_view=view.findViewById(R.id.recycler_view_feed_search);
+                if(adapter != null){
+                    adapter.notifyDataSetChanged();
+                }
+                else{
+                    Log.i("Feed_fragment",""+feed_arr.size());
+                    adapter=new FeedAdapter(feed_arr);
+                    adapter.notifyDataSetChanged();
+                }
+                rec_view.setAdapter(adapter);
+                rec_view.setLayoutManager(new LinearLayoutManager(getActivity()));
+                searchView.setQuery("", false);
                 return false;
             }
 
@@ -345,25 +355,9 @@ public class SearchFragment extends Fragment {
             }
         });
 
-        feed_arr.add(new feedItem("bhaskar","bhaskar is missing",110020,"bhaskar@email","check id"));
+//        feed_arr.add(new feedItem("bhaskar","bhaskar is missing",110020,"bhaskar@email","check id"));
 
-        RecyclerView rec_view=view.findViewById(R.id.recycler_view_feed_search);
-        if(adapter != null){
-            adapter.notifyDataSetChanged();
-        }
-        else{
-            Log.i("Feed_fragment",""+feed_arr.size());
-            adapter=new FeedAdapter(feed_arr);
-            adapter.notifyDataSetChanged();
-        }
-        rec_view.setAdapter(adapter);
-        rec_view.setLayoutManager(new LinearLayoutManager(getActivity()));
-        getActivity().registerReceiver(new BroadcastReceiver() {
-            @Override
-            public void onReceive(Context context, Intent intent) {
-                feed_arr.add(new feedItem("nitesh is missing","Description-5",115511,"Nitesh@email","nitesh_id"));
-            }
-        },new IntentFilter("New feed Found"));
+
         return view;
     }
 }
