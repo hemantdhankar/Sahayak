@@ -50,6 +50,7 @@ public class AfterLoginActivity extends AppCompatActivity implements BottomNavig
             case R.id.search_bi:
                 Log.d("check", "onNavigationItemSelected: search");
                 this.getSupportFragmentManager().beginTransaction().replace(R.id.MainContentFragment, searchFragment).commit();
+                this.getSupportFragmentManager().beginTransaction().detach(searchFragment).attach(searchFragment).commit();
                 return true;
             case R.id.addpost_bi:
                 Log.d("check", "onNavigationItemSelected: addpost");
