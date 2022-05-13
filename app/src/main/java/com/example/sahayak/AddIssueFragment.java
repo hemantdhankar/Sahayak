@@ -275,10 +275,8 @@ public class AddIssueFragment extends Fragment {
         String pincode = pincode_view.getText().toString();
         String category = autoCompleteTxt.getText().toString();
         String title=title_view.getText().toString();
-        Log.d("IssuesRaised", ""+path);
         String error_msg = Validator.validate_issue_raised_data(title,category,description,pincode,path);
         if(error_msg!=null)
-//        if(true)
         {
             Toast.makeText(getContext(),error_msg,Toast.LENGTH_SHORT).show();
             return;
