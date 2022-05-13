@@ -12,14 +12,29 @@
         android:layout_height="match_parent"
         android:text="Dashboard Fragment"
         android:textSize="50sp"/>
-    <Button
-        android:text="Post Feed"
+    <com.google.android.material.button.MaterialButton
+        style="@style/Widget.MaterialComponents.ExtendedFloatingActionButton"
+        app:cornerRadius="28dp"
         android:id="@+id/post_feed"
-
-        android:layout_height="wrap_content"
-        android:layout_width="match_parent"
+        android:layout_width="56dp"
+        android:layout_height="56dp"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        android:layout_marginBottom="70dp"
+        android:layout_marginRight="15dp"
+        android:drawableTop="@drawable/ic_baseline_feed_24"
+        android:gravity="center_horizontal|top"
 
 
         />
+<!--    <Button-->
+<!--        android:text="Post Feed"-->
+<!--        android:id="@+id/post_feed"-->
+
+<!--        android:layout_height="wrap_content"-->
+<!--        android:layout_width="match_parent"-->
+
+
+<!--        />-->
 
 </RelativeLayout>
