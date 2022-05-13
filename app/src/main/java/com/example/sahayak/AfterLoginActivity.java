@@ -25,7 +25,6 @@ public class AfterLoginActivity extends AppCompatActivity implements BottomNavig
     ProfileFragment profileFragment = new ProfileFragment();
     Feed_Fragment feed_fragment = new Feed_Fragment();
     SearchFragment searchFragment = new SearchFragment();
-
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

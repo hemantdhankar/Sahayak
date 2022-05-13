@@ -16,13 +16,24 @@
                 android:textAlignment="center"
                 android:id="@+id/post_title"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent" />
+                android:layout_height="match_parent"
+                android:textStyle="bold"
+                android:layout_margin="10dp"
+                android:text="Category"
+                android:textSize="20sp"/>
+
+            <ImageView
+                android:id="@+id/issue_image"
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:scaleType="centerCrop"></ImageView>
 
             <TextView
                 android:textAlignment="center"
                 android:id="@+id/post_description"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:padding="10dp"
                 />
             <TextView
                 android:id="@+id/post_pin"
@@ -31,31 +42,41 @@
                 android:layout_height="match_parent"
                 />
 
+
+            <fragment xmlns:android="http://schemas.android.com/apk/res/android"
+                xmlns:tools="http://schemas.android.com/tools"
+                android:layout_width="match_parent"
+                android:layout_height="200dp"
+                android:id="@+id/map"
+                tools:context=".MapsActivity"
+                android:name="com.google.android.gms.maps.SupportMapFragment" />
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
-                android:gravity="center_horizontal">
-                <LinearLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content">
+                android:gravity="center_horizontal"
+                android:layout_marginTop="10dp">
                     <Button
                         android:id="@+id/like_button"
-                        android:layout_width="wrap_content"
-                        android:layout_height="70dp"
+                        android:layout_width="50dp"
+                        android:layout_height="50dp"
+                        android:layout_marginRight="5dp"
                         android:background="@drawable/ic_baseline_thumb_up_24"
                         />
                     <TextView
-                        android:textSize="15dp"
+                        android:textSize="20dp"
                         android:id="@+id/numberoflikesmainpost"
                         android:layout_width="wrap_content"
-                        android:layout_height="wrap_content">
+                        android:layout_height="wrap_content"
+                        android:layout_marginRight="30dp"
+                        android:text="loading...">
                     </TextView>
-                </LinearLayout>
                 <Button
                     android:id="@+id/share_button"
-                    android:layout_width="wrap_content"
-                    android:layout_height="70dp"
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
+                    android:layout_marginLeft="30dp"
                     android:background="@drawable/ic_baseline_share_24"
                     />
             </LinearLayout>
@@ -66,24 +87,23 @@
                 android:gravity="center_horizontal">
                 <Button
                     android:id="@+id/claimissuebtn"
-                    android:text="Clain issue"
+                    android:text="Claim issue"
                     android:layout_width="120dp"
+                    android:layout_margin="5dp"
                     android:layout_height="wrap_content"></Button>
                 <Button
                     android:id="@+id/issueresolvedbtn"
                     android:text="Issue Resolved"
                     android:layout_width="120dp"
+                    android:layout_margin="5dp"
                     android:layout_height="wrap_content"></Button>
                 <Button
                     android:id="@+id/abortissuebtn"
                     android:text="Abort Issue"
                     android:layout_width="120dp"
+                    android:layout_margin="5dp"
                     android:layout_height="wrap_content"></Button>
             </LinearLayout>
-            <ImageView
-                android:id="@+id/issue_image"
-                android:layout_width="300dp"
-                android:layout_height="200sp"></ImageView>
         </LinearLayout>
 
     </ScrollView>

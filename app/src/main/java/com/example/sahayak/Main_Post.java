@@ -22,6 +22,14 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.maps.CameraUpdate;
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.LatLngBounds;
+import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -45,11 +53,14 @@ import java.util.Map;
  * Use the {@link Main_Post#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class Main_Post extends Fragment {
+public class Main_Post extends Fragment implements OnMapReadyCallback {
 
 
     View v;
     StorageReference storage_ref;
+    private GoogleMap mMap;
+    private double latitude = 0;
+    private double longitude = 0;
 
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -129,7 +140,8 @@ public class Main_Post extends Fragment {
         final String[] user_type = new String[1];
 
 
-
+        SupportMapFragment mapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map);
+        mapFragment.getMapAsync(this);
 
         final HashMap<String, Object>[] current_issue = new HashMap[]{new HashMap<String, Object>()};
         final HashMap<String, Object>[] current_user = new HashMap[]{new HashMap<String, Object>()};
@@ -146,6 +158,19 @@ public class Main_Post extends Fragment {
                         numberoflikes.setText(""+current_issue[0].get("number_of_likes"));
                         String image_path= (String) current_issue[0].get("image_path");
                         String path=current_issue[0].get("image_path").toString();
+                        latitude = (double) current_issue[0].get("latitude");
+                        longitude = (double) current_issue[0].get("longitude");
+                        LatLng latlong = new LatLng(latitude, longitude);
+                        MarkerOptions markerOptions = new MarkerOptions();
+                        markerOptions.position(latlong);
+                        markerOptions.title((String) current_issue[0].get("title"));
+                        mMap.clear();
+                        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latlong,15));
+                        // Zoom in, animating the camera.
+                        //mMap.animateCamera(CameraUpdateFactory.zoomIn());
+                        // Zoom out to zoom level 10, animating with a duration of 2 seconds.
+                        mMap.animateCamera(CameraUpdateFactory.zoomTo(15), 2000, null);                        mMap.animateCamera(CameraUpdateFactory.newLatLng(latlong));
+                        mMap.addMarker(markerOptions);
                         Log.d("pathh", " "+path);
                         storage_ref = FirebaseStorage.getInstance().getReference().child(path);
                         try{
@@ -477,5 +502,20 @@ public class Main_Post extends Fragment {
 
 
         return  v;
+    }
+
+    @Override
+    public void onMapReady(@NonNull GoogleMap googleMap) {
+        Log.i("Latitude: ", String.valueOf(latitude));
+        Log.i("Longitude: ", String.valueOf(longitude));
+            mMap = googleMap;
+
+            // Add a marker in Sydney and move the camera
+            LatLng sydney = new LatLng(latitude, longitude);
+            mMap.addMarker(new MarkerOptions()
+                    .position(sydney)
+                    .title("Marker in Sydney"));
+            mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
+
     }
 }

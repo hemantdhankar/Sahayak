@@ -320,6 +320,8 @@ public class AddIssueFragment extends Fragment {
 
         desc_view.setText("");
         pincode_view.setText("");
+        title_view.setText("");
+        image_view.setImageDrawable(null);
         path="";
         no_of_post++;
     }
