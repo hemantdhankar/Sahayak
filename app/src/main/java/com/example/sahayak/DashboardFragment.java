@@ -4,6 +4,7 @@ import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 
 import android.util.Log;
@@ -11,12 +12,14 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -39,6 +42,7 @@ public class DashboardFragment extends Fragment implements OnMapReadyCallback {
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
     private GoogleMap mMap;
+    FirebaseFirestore db;
     ArrayList<HashMap<String,Object>> issueList = new ArrayList<>();
     // TODO: Rename and change types of parameters
     private String mParam1;
@@ -51,7 +55,7 @@ public class DashboardFragment extends Fragment implements OnMapReadyCallback {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        db = FirebaseFirestore.getInstance();
         db.collection("Issue_detail")
                 .whereNotEqualTo("Status", "Resolved")
                 .get()
@@ -132,6 +136,46 @@ public class DashboardFragment extends Fragment implements OnMapReadyCallback {
                     .position(latlng)
                     .title((String) item.get("title")));
             mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latlng,15));
+            mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
+                @Override
+                public boolean onMarkerClick(Marker marker) {
+                    // on marker click we are getting the title of our marker
+                    // which is clicked and displaying it in a toast message.
+                    String markerName = marker.getTitle();
+                    Double clickedLatitude = marker.getPosition().latitude;
+                    Double clickedLongitude = marker.getPosition().longitude;
+                    ArrayList<String> filteredList = new ArrayList<>();
+                    db.collection("Issue_detail")
+                            .whereEqualTo("latitude", clickedLatitude)
+                            .whereEqualTo("longitude", clickedLongitude)
+                            .get()
+                            .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                                @Override
+                                public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                                    if (task.isSuccessful()) {
+                                        for (QueryDocumentSnapshot document : task.getResult()) {
+                                            String issue_id = document.getId();
+                                            filteredList.add(issue_id);
+                                        }
+                                        String clickedId = filteredList.get(0);
+                                        Log.i("TAG", clickedId);
+                                        feedItem fi = new feedItem("","",0,"",clickedId);
+                                        Bundle bundle= new Bundle();
+                                        bundle.putSerializable("pos", fi);
+                                        AppCompatActivity ac= (AppCompatActivity) v.getContext();
+                                        Main_Post ff= new Main_Post();
+                                        ff.setArguments(bundle);
+                                        ac.getSupportFragmentManager().beginTransaction().replace(R.id.MainContentFragment,ff)
+                                                .addToBackStack(null)
+                                                .commit();
+                                    } else {
+                                        Log.w("Feed_Fragment", "Error getting documents.", task.getException());
+                                    }
+                                }
+                            });
+                    return false;
+                }
+            });
         }
 
 

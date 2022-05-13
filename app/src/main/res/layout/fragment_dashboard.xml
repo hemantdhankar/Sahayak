@@ -11,7 +11,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:text="Dashboard Fragment"
-        android:textSize="50sp"/>
+        android:textSize="20sp"/>
     <com.google.android.material.button.MaterialButton
         style="@style/Widget.MaterialComponents.ExtendedFloatingActionButton"
         app:cornerRadius="28dp"

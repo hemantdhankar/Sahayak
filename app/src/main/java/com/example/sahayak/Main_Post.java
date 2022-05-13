@@ -1,10 +1,12 @@
 package com.example.sahayak;
 
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.media.JetPlayer;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 
@@ -12,6 +14,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.fragment.app.Fragment;
 
+import android.provider.MediaStore;
 import android.provider.Telephony;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -180,6 +183,26 @@ public class Main_Post extends Fragment implements OnMapReadyCallback {
                                 public void onSuccess(FileDownloadTask.TaskSnapshot taskSnapshot) {
                                     Bitmap bitmap=BitmapFactory.decodeFile(localFile.getAbsolutePath());
                                     imageview.setImageBitmap(bitmap);
+                                    sharebtn.setClickable(true);
+                                    sharebtn.setVisibility(View.VISIBLE);
+                                    sharebtn.setOnClickListener(new View.OnClickListener() {
+                                        @Override
+                                        public void onClick(View view) {
+                                            String text = (String) current_issue[0].get(
+                                                    "description")+"\n*Checkout our Application here*\nhttps://sahayakapp.page.link/issue";
+                                            String path = MediaStore.Images.Media.insertImage(getActivity().getContentResolver(), bitmap, "Image Description", null);
+                                            Uri uri = Uri.parse(path);
+                                            Intent shareIntent = new  Intent();
+                                            shareIntent.setAction(Intent.ACTION_SEND);
+                                            shareIntent.putExtra(Intent.EXTRA_TEXT, text);
+                                            //shareIntent.putExtra(Intent.EXTRA_TEXT,"https://sahayakapp.page.link/feed");
+                                            shareIntent.putExtra(Intent.EXTRA_STREAM, uri);
+                                            shareIntent.setType("image/*");
+                                            shareIntent.setAction(Intent.ACTION_SEND_MULTIPLE);
+                                            shareIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                                            startActivity(Intent.createChooser(shareIntent, "Share images..."));
+                                        }
+                                    });
                                 }
                             }).addOnFailureListener(new OnFailureListener(){
 
@@ -194,9 +217,9 @@ public class Main_Post extends Fragment implements OnMapReadyCallback {
                         }
 
                         //to avoid 3 secs delay
-                        title.setText(fc.title);
-                        desc.setText(fc.description);
-                        pin.setText(""+fc.pincode);
+                        title.setText(((String)current_issue[0].get("title")));
+                        desc.setText((String)current_issue[0].get("description"));
+                        pin.setText(""+(String)current_issue[0].get("pin_code"));
                         likeButton.setVisibility(View.VISIBLE);
                         sharebtn.setVisibility(View.VISIBLE);
 
