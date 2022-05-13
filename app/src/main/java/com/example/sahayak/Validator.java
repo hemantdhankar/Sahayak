@@ -114,9 +114,12 @@ public class Validator {
             return "Password is Too Short!";
         }
     }
-    public static String validate_issue_raised_data(String category, String description, String pincode) {
+    public static String validate_issue_raised_data(String title,String category, String description, String pincode, String path) {
         if(category.length()==0 || category.equals(""))
             return "Please select category";
+
+        if(title.length()==0)
+            return "Please enter title";
         if(description.length()<10)
             return "Please describe more!";
         try {
@@ -127,6 +130,9 @@ public class Validator {
         catch(Exception e) {
             return "Enter a valid pincode!";
         }
+        if(path==null)
+            return "Please upload image!";
         return null;
+
     }
 }
